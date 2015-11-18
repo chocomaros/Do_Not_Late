@@ -45,6 +45,5 @@ public class CurrentShowingListActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(new ListAdapter(getApplicationContext(),appointmentList,R.layout.current_appointment_list));
     }
-
-
 }
+
