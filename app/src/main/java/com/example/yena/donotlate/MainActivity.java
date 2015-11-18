@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
             View rootView = inflater.inflate(R.layout.activity_current_showing_list,container,false);
-            RecyclerView recyclerView=(RecyclerView)findViewById(R.id.rv_current);
+            RecyclerView recyclerView=(RecyclerView)rootView.findViewById(R.id.rv_current);
             LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(layoutManager);
@@ -215,6 +215,21 @@ public class MainActivity extends AppCompatActivity {
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.activity_completed_showing_list, container, false);
+
+            RecyclerView recyclerView=(RecyclerView)rootView.findViewById(R.id.rv_completed);
+            LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(layoutManager);
+
+            List<ListData> appointmentList=new ArrayList<>();
+
+
+            Day current = new Day();
+            current = current.currentTime();
+            ListData appointment = new ListData("이건 끝난곳",current);
+            appointmentList.add(appointment);
+
+            recyclerView.setAdapter(new ListAdapter(getContext(), appointmentList, R.layout.completed_appointment_list));
 
             return rootView;
         }

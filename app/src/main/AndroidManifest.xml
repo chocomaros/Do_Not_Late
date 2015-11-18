@@ -17,14 +17,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CurrentShowingListActivity"
-            android:theme="@style/AppThemeWithActionBar" >
-        </activity>
-        <activity
-            android:name=".CompletedShowingListActivity"
-            android:theme="@style/AppThemeWithActionBar" >
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" >
