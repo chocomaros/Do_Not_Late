@@ -18,7 +18,7 @@ public class StartActivity extends Activity {
         showList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                Intent intent = new Intent(StartActivity.this,AddDataActivity.class);
                 startActivity(intent);
             }
         });
