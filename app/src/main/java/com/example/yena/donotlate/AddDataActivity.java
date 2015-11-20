@@ -3,11 +3,14 @@ package com.example.yena.donotlate;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -19,7 +22,7 @@ import android.widget.Toast;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class AddDataActivity extends Activity {
+public class AddDataActivity extends AppCompatActivity {
     TextView tvTime,tvDate;
     EditText etTitle;
     ListData data = new ListData("",new Day());
@@ -27,6 +30,7 @@ public class AddDataActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_data);
+        etTitle = (EditText) findViewById(R.id.et_insert_title);
         tvTime = (TextView) findViewById(R.id.tv_insert_time);
         tvDate =(TextView) findViewById(R.id.tv_insert_date);
 
@@ -58,7 +62,7 @@ public class AddDataActivity extends Activity {
             data.dDay.year = year;
             data.dDay.month = monthOfYear;
             data.dDay.day = dayOfMonth;
-            tvDate.setText(" "+year+". "+(monthOfYear+1)+". "+dayOfMonth);
+            tvDate.setText("날짜 -> "+year+". "+(monthOfYear+1)+". "+dayOfMonth);
         }
     };
 
@@ -69,12 +73,41 @@ public class AddDataActivity extends Activity {
             data.dDay.hour = hourOfDay;
             data.dDay.minute = minute;
             if(minute < 10){
-                tvTime.setText(" "+hourOfDay+": 0"+minute);
+                tvTime.setText("시간 -> "+hourOfDay+" : 0"+minute);
             }
             else {
-                tvTime.setText(" " + hourOfDay + ": " + minute);
+                tvTime.setText("시간 -> " + hourOfDay + " : " + minute);
             }
         }
     };
+
+    private void setTitle(){
+        data.title = etTitle.getText().toString();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_add, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_save) {
+            //TODO 디비에 저장하기
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
 }

@@ -1,9 +1,11 @@
 package com.example.yena.donotlate;
 
+import java.io.Serializable;
+
 /**
  * Created by yena on 2015-11-13.
  */
-public class ListData {
+public class ListData implements Serializable{
 
     String title;
     String destination;
@@ -11,6 +13,7 @@ public class ListData {
     Day startDay;
     Day startToDday;
 
+    Boolean isActivated = false;
     Boolean isComplete = false;
 
     String getTitle(){

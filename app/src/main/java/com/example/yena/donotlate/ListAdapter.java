@@ -1,10 +1,12 @@
 package com.example.yena.donotlate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,18 +30,30 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 public class ViewHolder extends RecyclerView.ViewHolder{
 
     TextView title;
+    Button btStart, btMore;
 
 
     public ViewHolder(View itemView) {
         super(itemView);
         this.title = (TextView)itemView.findViewById(R.id.list_title);
+        this.btMore = (Button)itemView.findViewById(R.id.bt_more);
+        this.btStart = (Button)itemView.findViewById(R.id.bt_start);
     }
 
 }
     @Override
     public void onBindViewHolder(ListAdapter.ViewHolder holder, int position) {
-        ListData item = items.get(position);
+        final ListData item = items.get(position);
         holder.title.setText(item.getTitle());
+
+        holder.btMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(),MoreActivity.class);
+                intent.putExtra("data", item);
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override

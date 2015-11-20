@@ -19,15 +19,15 @@
 
 <resources>
 
-    <style name="Theme.Example" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme.Example" parent="@style/Theme.AppCompat.Light">
         <item name="actionBarItemBackground">@drawable/selectable_background_example</item>
         <item name="popupMenuStyle">@style/PopupMenu.Example</item>
         <item name="dropDownListViewStyle">@style/DropDownListView.Example</item>
-        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Example</item>
+        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Yenatheme</item>
         <item name="actionDropDownStyle">@style/DropDownNav.Example</item>
-        <item name="actionBarStyle">@style/ActionBar.Solid.Example</item>
-        <item name="actionModeBackground">@drawable/cab_background_top_example</item>
-        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_example</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.Yenatheme</item>
+        <item name="actionModeBackground">@drawable/cab_background_top_yenatheme</item>
+        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_yenatheme</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Example</item>
 
                 <!-- Light.DarkActionBar specific -->
@@ -36,8 +36,8 @@
     </style>
 
     <style name="ActionBar.Solid.Example" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/ab_solid_example</item>
-        <item name="backgroundStacked">@drawable/ab_stacked_solid_example</item>
+        <item name="background">@drawable/ab_solid_yenatheme</item>
+        <item name="backgroundStacked">@drawable/ab_stacked_solid_yenatheme</item>
         <item name="backgroundSplit">@drawable/ab_bottom_solid_example</item>
         <item name="progressBarStyle">@style/ProgressBar.Example</item>
     </style>
@@ -56,7 +56,7 @@
     </style>
 
     <style name="ActionBarTabStyle.Example" parent="@style/Widget.AppCompat.ActionBar.TabView">
-        <item name="android:background">@drawable/tab_indicator_ab_example</item>
+        <item name="android:background">@drawable/tab_indicator_ab_yenatheme</item>
     </style>
 	
     <style name="DropDownNav.Example" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">

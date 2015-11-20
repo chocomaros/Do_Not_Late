@@ -1,12 +1,13 @@
 package com.example.yena.donotlate;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by yena on 2015-11-13.
  */
-public class Day {
+public class Day implements Serializable{
 
     public static int KOREA_TIME_DIFFERENCE = 9;
 
