@@ -9,4 +9,5 @@
     <color name="blue_pressed">#ff0099cc</color>
     <color name="blue_normal">#8ad4ef</color>
     <color name="GRAY">#dedede</color>
+    <color name="BLACK">#000000</color>
 </resources>

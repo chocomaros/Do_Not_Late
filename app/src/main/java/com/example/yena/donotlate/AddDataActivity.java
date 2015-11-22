@@ -1,31 +1,30 @@
 package com.example.yena.donotlate;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Intent;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
-
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class AddDataActivity extends AppCompatActivity {
     TextView tvTime,tvDate;
     EditText etTitle;
     ListData data = new ListData("",new Day());
+    Boolean checkTitle = false;
+    Boolean checkDate = false;
+    Boolean checkTime = false;
+    Boolean checkPlace = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +61,8 @@ public class AddDataActivity extends AppCompatActivity {
             data.dDay.year = year;
             data.dDay.month = monthOfYear;
             data.dDay.day = dayOfMonth;
-            tvDate.setText("날짜 -> "+year+". "+(monthOfYear+1)+". "+dayOfMonth);
+            tvDate.setText("날짜 => "+year+". "+(monthOfYear+1)+". "+dayOfMonth);
+            checkDate = true;
         }
     };
 
@@ -73,16 +73,18 @@ public class AddDataActivity extends AppCompatActivity {
             data.dDay.hour = hourOfDay;
             data.dDay.minute = minute;
             if(minute < 10){
-                tvTime.setText("시간 -> "+hourOfDay+" : 0"+minute);
+                tvTime.setText("시간 => "+hourOfDay+" : 0"+minute);
             }
             else {
-                tvTime.setText("시간 -> " + hourOfDay + " : " + minute);
+                tvTime.setText("시간 => " + hourOfDay + " : " + minute);
             }
+            checkTime = true;
         }
     };
 
     private void setTitle(){
         data.title = etTitle.getText().toString();
+        if(data.title.length() != 0) checkTitle = true;
     }
 
     @Override
@@ -101,13 +103,51 @@ public class AddDataActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
-            //TODO 디비에 저장하기
-            finish();
+            setTitle();
+            //TODO 디비에 저장하기, checkPlace도 추가
+            if(checkTitle && checkDate && checkTime){
+                if(!isTimePassed()){
+
+                    finish();
+                }
+                else{
+                    printAlertDialog("시간 확인","과거 시간을 선택하셨습니다.");
+                }
+            }
+            else{
+                printAlertDialog("선택 확인","선택하지 않은 항목이 있습니다.");
+            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    boolean isTimePassed(){
+        long currentTime, dDayTime;
+        Calendar current = Calendar.getInstance();
+        Calendar dDay = Calendar.getInstance();
+        dDay.set(data.dDay.year, data.dDay.month, data.dDay.day, data.dDay.hour, data.dDay.minute);
+        currentTime = current.getTimeInMillis();
+        dDayTime = dDay.getTimeInMillis();
+
+        if(currentTime >= dDayTime) return true;
+        else return false;
+    }
+
+    void printAlertDialog(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomActionBarTheme));
+
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int whichButton){
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
 }

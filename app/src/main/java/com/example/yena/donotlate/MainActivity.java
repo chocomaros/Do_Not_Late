@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
             Day current = new Day();
             current = current.currentTime();
             ListData appointment = new ListData("집가야지",current);
-            ListData appointment1 = new ListData("으에에엥");
+            ListData appointment1 = new ListData("가나다라마바사아자차카타파하다");
             ListData appointment2 = new ListData("으에에엥2");
             ListData appointment3 = new ListData("으에에엥3");
             ListData appointment4 = new ListData("으에에엥4");

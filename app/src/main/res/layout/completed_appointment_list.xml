@@ -37,14 +37,13 @@
                 android:textAlignment="center"
                 android:id="@+id/bt_more"
                 android:background="@drawable/bt_basic"
-                android:layout_weight="4"/>
+                android:layout_weight="6"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_width="78dp"
+                android:layout_height="match_parent"
                 android:id="@+id/check_icon"
-                android:src="@drawable/ic_check"
-                android:layout_weight="1"/>
+                android:src="@drawable/ic_check" />
         </LinearLayout>
 
 
