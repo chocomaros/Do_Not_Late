@@ -3,6 +3,8 @@ package com.example.yena.donotlate;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +19,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 
 public class AddDataActivity extends AppCompatActivity {
-    TextView tvTime,tvDate;
+    TextView tvTime,tvDate,tvPlace;
     EditText etTitle;
     ListData data = new ListData("",new Day());
     Boolean checkTitle = false;
@@ -31,7 +33,8 @@ public class AddDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_data);
         etTitle = (EditText) findViewById(R.id.et_insert_title);
         tvTime = (TextView) findViewById(R.id.tv_insert_time);
-        tvDate =(TextView) findViewById(R.id.tv_insert_date);
+        tvDate = (TextView) findViewById(R.id.tv_insert_date);
+        tvPlace = (TextView) findViewById(R.id.tv_insert_place);
 
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +56,13 @@ public class AddDataActivity extends AppCompatActivity {
            }
        });
 
+        tvPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AddDataActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
@@ -62,6 +72,7 @@ public class AddDataActivity extends AppCompatActivity {
             data.dDay.month = monthOfYear;
             data.dDay.day = dayOfMonth;
             tvDate.setText("날짜 => "+year+". "+(monthOfYear+1)+". "+dayOfMonth);
+            tvDate.setTextColor(Color.BLACK);
             checkDate = true;
         }
     };
@@ -78,6 +89,7 @@ public class AddDataActivity extends AppCompatActivity {
             else {
                 tvTime.setText("시간 => " + hourOfDay + " : " + minute);
             }
+            tvTime.setTextColor(Color.BLACK);
             checkTime = true;
         }
     };
