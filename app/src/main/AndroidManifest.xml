@@ -35,15 +35,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
         </activity>
-
         <activity android:name=".AddDataActivity" >
         </activity>
-
         <activity android:name=".MoreActivity" >
         </activity>
 
@@ -54,6 +51,8 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
+        </activity>
+        <activity android:name=".Main2Activity" >
         </activity>
     </application>
 

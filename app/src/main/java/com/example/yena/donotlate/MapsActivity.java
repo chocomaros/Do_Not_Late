@@ -5,21 +5,37 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.GeoDataApi;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceTypes;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
+import java.util.List;
 
-    GoogleMap mMap;
-    EditText etSearch;
-    Button btSearch;
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+
+        GoogleMap mMap;
+        EditText etSearch;
+        Button btSearch;
+        LatLng southWestKorea, northEastKorea;
+        GoogleApiClient mGoogleApiClient;
+        String query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +45,47 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        southWestKorea = new LatLng(33,124);
+        northEastKorea = new LatLng(43,131);
+        final LatLngBounds mBounds = new LatLngBounds(southWestKorea,northEastKorea);
+
+       // List<Integer> filterTypes = new ArrayList<Integer>();
+       // filterTypes.add( Place.TYPE_ESTABLISHMENT );
+        final AutocompleteFilter mAutocompleteFilter = AutocompleteFilter.create(PlaceTypes.ALL);
+
+        btSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                query = etSearch.getText().toString();
+                PendingResult result = Places.GeoDataApi.getAutocompletePredictions(
+                        mGoogleApiClient, query, mBounds, mAutocompleteFilter);
+            }
+        });
+
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 
 
@@ -72,5 +129,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

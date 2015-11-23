@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,9 +202,11 @@ public class MainActivity extends AppCompatActivity {
             appointmentList.add(appointment4);
             appointmentList.add(appointment5);
             appointmentList.add(appointment6);
-            Log.d("현재 시간? ", current.year + "년 " + current.month + "월 " + current.day + "일 " + current.hour + "시 " + current.minute + "분");
+            //Log.d("현재 시간? ", current.year + "년 " + current.month + "월 " + current.day + "일 " + current.hour + "시 " + current.minute + "분");
 
-            recyclerView.setAdapter(new ListAdapter(getContext(),appointmentList,R.layout.current_appointment_list));
+
+
+            recyclerView.setAdapter(new ListAdapter(getContext(), appointmentList,0));
 
             return rootView;
         }
@@ -228,9 +231,11 @@ public class MainActivity extends AppCompatActivity {
             Day current = new Day();
             current = current.currentTime();
             ListData appointment = new ListData("이건 끝난곳",current);
+            appointment.isSuccess = false;
+            appointment.isComplete = true;
             appointmentList.add(appointment);
 
-            recyclerView.setAdapter(new ListAdapter(getContext(), appointmentList, R.layout.completed_appointment_list));
+            recyclerView.setAdapter(new ListAdapter(getContext(), appointmentList, 0));
 
             return rootView;
         }

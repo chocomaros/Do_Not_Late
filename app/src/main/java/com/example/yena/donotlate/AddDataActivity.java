@@ -59,7 +59,7 @@ public class AddDataActivity extends AppCompatActivity {
         tvPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AddDataActivity.this, MapsActivity.class);
+                Intent intent = new Intent(AddDataActivity.this, Main2Activity.class);
                 startActivity(intent);
             }
         });
