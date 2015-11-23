@@ -2,6 +2,7 @@ package com.example.yena.donotlate;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -188,20 +189,31 @@ public class MainActivity extends AppCompatActivity {
             //TODO 지워야될거 test하는거
             Day current = new Day();
             current = current.currentTime();
-            ListData appointment = new ListData("집가야지",current);
-            ListData appointment1 = new ListData("가나다라마바사아자차카타파하다");
-            ListData appointment2 = new ListData("으에에엥2");
-            ListData appointment3 = new ListData("으에에엥3");
-            ListData appointment4 = new ListData("으에에엥4");
-            ListData appointment5 = new ListData("으에에엥5");
-            ListData appointment6 = new ListData("으에에엥6");
-            appointmentList.add(appointment);
-            appointmentList.add(appointment1);
-            appointmentList.add(appointment2);
-            appointmentList.add(appointment3);
-            appointmentList.add(appointment4);
-            appointmentList.add(appointment5);
-            appointmentList.add(appointment6);
+
+            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
+            mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null, '존나 하기 시러','adf'," +
+                    "'연구실임','2015-11-24 03:33','2015-11-24 05:00', 1.13, 2.13, 3.3, 4.1, 1, 0 , 0)");
+            Cursor cursor = mDBHelper.mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
+            while(cursor.moveToNext()){
+                ListData temp = new ListData(cursor);
+                appointmentList.add(temp);
+            }
+            cursor.close();
+            mDBHelper.close();
+//            ListData appointment = new ListData("집가야지",current);
+//            ListData appointment1 = new ListData("가나다라마바사아자차카타파하다");
+//            ListData appointment2 = new ListData("으에에엥2");
+//            ListData appointment3 = new ListData("으에에엥3");
+//            ListData appointment4 = new ListData("으에에엥4");
+//            ListData appointment5 = new ListData("으에에엥5");
+//            ListData appointment6 = new ListData("으에에엥6");
+//            appointmentList.add(appointment);
+//            appointmentList.add(appointment1);
+//            appointmentList.add(appointment2);
+//            appointmentList.add(appointment3);
+//            appointmentList.add(appointment4);
+//            appointmentList.add(appointment5);
+//            appointmentList.add(appointment6);
             //Log.d("현재 시간? ", current.year + "년 " + current.month + "월 " + current.day + "일 " + current.hour + "시 " + current.minute + "분");
 
 

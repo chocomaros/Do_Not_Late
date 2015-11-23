@@ -3,6 +3,7 @@ package com.example.yena.donotlate;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by yena on 2015-11-13.
@@ -32,6 +33,16 @@ public class Day implements Serializable{
         this.minute = day.minute;
     }
     public Day() {
+    }
+
+    public Day(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
     }
 
     public Day currentTime(){

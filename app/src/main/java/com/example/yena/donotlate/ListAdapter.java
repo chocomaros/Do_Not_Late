@@ -66,7 +66,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if(holder instanceof NotCompleteViewHolder){
             NotCompleteViewHolder tempHolder = (NotCompleteViewHolder) holder;
-            tempHolder.title.setText(item.getTitle());
+            tempHolder.title.setText(item.title);
 
             if(position == 0){
                 tempHolder.btStart.setEnabled(true);
@@ -91,7 +91,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         else if(holder instanceof CompleteViewHolder){
             CompleteViewHolder tempHolder = (CompleteViewHolder) holder;
-            tempHolder.title.setText(item.getTitle());
+            tempHolder.title.setText(item.title);
             if(!item.isSuccess) tempHolder.successImage.setImageDrawable(context.getDrawable(R.drawable.ic_x));
 
             tempHolder.btMore.setOnClickListener(new View.OnClickListener() {
