@@ -41,7 +41,8 @@ public class ListDataDBHelper {
                     +ListData.S_LONGITUDE+"double , "                   //9
                     +ListData.IS_ACTIVATED+" int , "                //10
                     +ListData.IS_COMPLETED+" int , "                //11
-                    +ListData.IS_SUCCESS+" int );");                //12
+                    +ListData.IS_SUCCESS+" int , "                  //12
+                    +ListData.IS_STARTED+" int );");                //13
 
         }
 

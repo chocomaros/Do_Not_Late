@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
             ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
             mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null, '존나 하기 시러','adf'," +
-                    "'연구실임','2015-11-24 03:33','2015-11-24 05:00', 1.13, 2.13, 3.3, 4.1, 1, 0 , 0)");
+                    "'연구실임','2015-11-24 03:33','2015-11-24 05:00', 1.13, 2.13, 3.3, 4.1, 1, 0 , 0, 0)");
             Cursor cursor = mDBHelper.mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
             while(cursor.moveToNext()){
                 ListData temp = new ListData(cursor);

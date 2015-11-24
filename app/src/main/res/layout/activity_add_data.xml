@@ -26,6 +26,7 @@
             android:paddingTop="5dp"
             android:layout_marginBottom="5dp"
             android:hint="제목을 입력해주세요."
+            android:singleLine="true"
             android:maxLength="15"
             android:layout_gravity="center_horizontal" />
 
@@ -56,11 +57,11 @@
             android:paddingBottom= "5dp"
             android:id="@+id/tv_insert_place" />
 
-        <fragment
+        <com.google.android.gms.maps.MapView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:id="@+id/fragment_map" />
+            android:id="@+id/map"/>
 
     </LinearLayout>
 

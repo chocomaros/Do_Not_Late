@@ -21,17 +21,27 @@ import android.widget.TimePicker;
 
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Calendar;
 
 public class AddDataActivity extends AppCompatActivity {
     TextView tvTime,tvDate,tvPlace;
     EditText etTitle;
-    ListData data = new ListData("",new Day());
+    MapView mapView;
+    ListData listData = new ListData("",new Day());
     Boolean checkTitle = false;
     Boolean checkDate = false;
     Boolean checkTime = false;
     Boolean checkPlace = false;
+    GoogleMap googleMap;
     final int REQUEST_PLACE_PICKER = 1;
 
     @Override
@@ -42,6 +52,12 @@ public class AddDataActivity extends AppCompatActivity {
         tvTime = (TextView) findViewById(R.id.tv_insert_time);
         tvDate = (TextView) findViewById(R.id.tv_insert_date);
         tvPlace = (TextView) findViewById(R.id.tv_insert_place);
+        mapView = (MapView) findViewById(R.id.map);
+
+
+        mapView.onCreate(new Bundle());
+        mapView.onResume();
+        mapView.setVisibility(View.INVISIBLE);
 
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,46 +83,59 @@ public class AddDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try{
-                PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-                Intent intent = intentBuilder.build(AddDataActivity.this);
-                // Start the Intent by requesting a result, identified by a request code.
-                startActivityForResult(intent, REQUEST_PLACE_PICKER);
+                    PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+                    Intent intent = intentBuilder.build(AddDataActivity.this);
+                    startActivityForResult(intent, REQUEST_PLACE_PICKER);
                 }catch (Exception e){
-
+                    e.printStackTrace();
                 }
-//                Intent intent = new Intent(AddDataActivity.this, Main2Activity.class);
-//                startActivity(intent);
             }
         });
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // BEGIN_INCLUDE(activity_result)
         if (requestCode == REQUEST_PLACE_PICKER) {
-            // This result is from the PlacePicker dialog.
-
-
             if (resultCode == Activity.RESULT_OK) {
-                /* User has picked a place, extract data.
-                   Data is extracted from the returned intent by retrieving a Place object from
-                   the PlacePicker.
-                 */
                 final Place place = PlacePicker.getPlace(data, AddDataActivity.this);
+                listData.placeName = (String)place.getName();
+                //final CharSequence address = place.getAddress();
+                //final CharSequence phone = place.getPhoneNumber();
+                listData.placeID = place.getId();
+                listData.dLatitude = place.getLatLng().latitude;
+                listData.dLongitude =place.getLatLng().longitude;
+//                String attribution = PlacePicker.getAttributions(data);
+//                if(attribution == null){
+//                    attribution = "";
+//                }
+                int latitudeToInt = (int)listData.dLatitude;
 
-                /* A Place object contains details about that place, such as its name, address
-                and phone number. Extract the name, address, phone number, place ID and place types.
-                 */
-                final CharSequence name = place.getName();
-                final CharSequence address = place.getAddress();
-                final CharSequence phone = place.getPhoneNumber();
-                final String placeId = place.getId();
-                String attribution = PlacePicker.getAttributions(data);
-                if(attribution == null){
-                    attribution = "";
-                }
-                tvPlace.setText(name);
-            } else {
+                if(listData.placeName.toString().startsWith("(" + Integer.toString(latitudeToInt))){
+                    editTextAlertDialog("장소 이름","선택하신 장소의 이름을 써주세요.");
+                } else tvPlace.setText("장소 => "+listData.placeName);
+
+                tvPlace.setTextColor(Color.BLACK);
+                checkPlace = true;
+                mapView.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap returnedMap) {
+                        Log.d("mapview", "ready");
+                        googleMap = returnedMap;
+                        try {
+                            MapsInitializer.initialize(getApplicationContext());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        MarkerOptions marker = new MarkerOptions().position(new LatLng(listData.dLatitude, listData.dLongitude)).title("Seoul");
+                        CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(listData.dLatitude, listData.dLongitude)).zoom(16).build();
+                        googleMap.clear();
+                        googleMap.addMarker(marker);
+                        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+                        mapView.setVisibility(View.VISIBLE);
+                    }
+
+                });
             }
-
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -116,9 +145,9 @@ public class AddDataActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            data.dDay.year = year;
-            data.dDay.month = monthOfYear;
-            data.dDay.day = dayOfMonth;
+            listData.dDay.year = year;
+            listData.dDay.month = monthOfYear;
+            listData.dDay.day = dayOfMonth;
             tvDate.setText("날짜 => "+year+". "+(monthOfYear+1)+". "+dayOfMonth);
             tvDate.setTextColor(Color.BLACK);
             checkDate = true;
@@ -129,8 +158,8 @@ public class AddDataActivity extends AppCompatActivity {
             = new TimePickerDialog.OnTimeSetListener() {
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            data.dDay.hour = hourOfDay;
-            data.dDay.minute = minute;
+            listData.dDay.hour = hourOfDay;
+            listData.dDay.minute = minute;
             if(minute < 10){
                 tvTime.setText("시간 => "+hourOfDay+" : 0"+minute);
             }
@@ -143,8 +172,8 @@ public class AddDataActivity extends AppCompatActivity {
     };
 
     private void setTitle(){
-        data.title = etTitle.getText().toString();
-        if(data.title.length() != 0) checkTitle = true;
+        listData.title = etTitle.getText().toString();
+        if(listData.title.length() != 0) checkTitle = true;
     }
 
     @Override
@@ -165,7 +194,7 @@ public class AddDataActivity extends AppCompatActivity {
         if (id == R.id.action_save) {
             setTitle();
             //TODO 디비에 저장하기, checkPlace도 추가
-            if(checkTitle && checkDate && checkTime){
+            if(checkTitle && checkDate && checkTime && checkPlace){
                 if(!isTimePassed()){
 
                     finish();
@@ -187,7 +216,7 @@ public class AddDataActivity extends AppCompatActivity {
         long currentTime, dDayTime;
         Calendar current = Calendar.getInstance();
         Calendar dDay = Calendar.getInstance();
-        dDay.set(data.dDay.year, data.dDay.month, data.dDay.day, data.dDay.hour, data.dDay.minute);
+        dDay.set(listData.dDay.year, listData.dDay.month, listData.dDay.day, listData.dDay.hour, listData.dDay.minute);
         currentTime = current.getTimeInMillis();
         dDayTime = dDay.getTimeInMillis();
 
@@ -204,6 +233,26 @@ public class AddDataActivity extends AppCompatActivity {
                 .setPositiveButton("확인", new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int whichButton){
                         dialog.cancel();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    void editTextAlertDialog(String title, String message){
+        final EditText input = new EditText(this);
+        input.setSingleLine();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomActionBarTheme));
+        builder.setView(input);
+
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int whichButton){
+                        tvPlace.findViewById(R.id.tv_insert_place);
+                        tvPlace.setText("장소 => " +input.getText());
                     }
                 });
         AlertDialog dialog = builder.create();
