@@ -1,9 +1,12 @@
 package com.example.yena.donotlate;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,18 +25,20 @@ public class MoreActivity extends AppCompatActivity {
     TextView tvTitle, tvDate, tvTime, tvPlace;
     MapView mapView;
     GoogleMap googleMap;
+    ListData data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_more);
 
-        final ListData data = (ListData)getIntent().getSerializableExtra("data");
+
         tvTitle = (TextView)findViewById(R.id.tv_more_title);
         tvDate = (TextView)findViewById(R.id.tv_more_date);
         tvTime = (TextView)findViewById(R.id.tv_more_time);
         tvPlace = (TextView)findViewById(R.id.tv_more_place);
         mapView = (MapView)findViewById(R.id.more_map);
+        data = (ListData)getIntent().getSerializableExtra("data");
 
         tvTitle.setText(data.title);
         tvDate.setText("날짜 => "+data.dDay.year+". "+(data.dDay.month+1)+". "+data.dDay.day);
@@ -59,7 +64,7 @@ public class MoreActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                MarkerOptions marker = new MarkerOptions().position(new LatLng(data.dLatitude, data.dLongitude)).title("Seoul");
+                MarkerOptions marker = new MarkerOptions().position(new LatLng(data.dLatitude, data.dLongitude)).title(data.placeName);
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(data.dLatitude, data.dLongitude)).zoom(16).build();
                 googleMap.clear();
                 googleMap.addMarker(marker);
@@ -89,10 +94,44 @@ public class MoreActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete) {
             //TODO 삭제하는거 여기에 만들어
-            finish();
+            if(data.isComplete){
+                printAlertDialog("삭제","정말로 삭제하시겠습니까?");
+
+            } else{
+
+            }
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void printAlertDialog(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomActionBarTheme));
+
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        deleteInDB();
+                        finish();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    void deleteInDB(){
+        ListDataDBHelper mDBHelper = new ListDataDBHelper(getApplicationContext());
+        mDBHelper.open().mDB.execSQL("delete from "+ListData.TABLE_NAME+" where ID = "+data.id+";");
+        mDBHelper.close();
     }
 }

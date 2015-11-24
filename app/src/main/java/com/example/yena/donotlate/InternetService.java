@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.IBinder;
 
 public class InternetService extends Service {
+
     public InternetService() {
     }
+
+    
 
     @Override
     public IBinder onBind(Intent intent) {
