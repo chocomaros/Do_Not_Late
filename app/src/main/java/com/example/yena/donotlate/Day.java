@@ -1,9 +1,11 @@
 package com.example.yena.donotlate;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Created by yena on 2015-11-13.
@@ -97,5 +99,13 @@ public class Day implements Serializable{
     void printTimeDifference(){
        // Day difference = timeDifference();
         //TODO 디데이와 현재 시간 출력 어떻게 해줄지?
+    }
+
+    public String toString(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day, hour, minute);
+
+        return sdf.format(new Date(calendar.getTimeInMillis()));
     }
 }

@@ -193,10 +193,13 @@ public class AddDataActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
             setTitle();
-            //TODO 디비에 저장하기, checkPlace도 추가
+            //TODO 디비에 저장하기
             if(checkTitle && checkDate && checkTime && checkPlace){
                 if(!isTimePassed()){
-
+                    ListDataDBHelper mDBHelper = new ListDataDBHelper(getApplicationContext());
+                    mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null,'"+listData.title+"','"+listData.placeID
+                            +"','"+listData.placeName+"',null,'"+listData.dDay.toString()+"', "+listData.dLatitude+", "+listData.dLongitude+", 0, 0, 0, 0 , 0, 0)");
+//                    Log.d("AdapterActivity",listData.dDay+"");
                     finish();
                 }
                 else{

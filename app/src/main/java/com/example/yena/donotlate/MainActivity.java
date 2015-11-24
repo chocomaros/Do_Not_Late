@@ -173,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class CurrentListFragment extends Fragment {
+        ListAdapter adapter;
+        List<ListData> appointmentList=new ArrayList<>();
         public CurrentListFragment(){
 
         }
@@ -184,22 +186,20 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(layoutManager);
 
-            List<ListData> appointmentList=new ArrayList<>();
-
             //TODO 지워야될거 test하는거
             Day current = new Day();
             current = current.currentTime();
 
-            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
-            mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null, '존나 하기 시러','adf'," +
-                    "'연구실임','2015-11-24 03:33','2015-11-24 05:00', 1.13, 2.13, 3.3, 4.1, 1, 0 , 0, 0)");
-            Cursor cursor = mDBHelper.mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
-            while(cursor.moveToNext()){
-                ListData temp = new ListData(cursor);
-                appointmentList.add(temp);
-            }
-            cursor.close();
-            mDBHelper.close();
+//            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
+////            mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null, '존나 하기 시러','adf'," +
+////                    "'연구실임','2015-11-24 03:33','2015-11-24 05:00', 1.13, 2.13, 3.3, 4.1, 1, 0 , 0, 0)");
+//            Cursor cursor = mDBHelper.open().mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
+//            while(cursor.moveToNext()){
+//                ListData temp = new ListData(cursor);
+//                appointmentList.add(temp);
+//            }
+//            cursor.close();
+//            mDBHelper.close();
 //            ListData appointment = new ListData("집가야지",current);
 //            ListData appointment1 = new ListData("가나다라마바사아자차카타파하다");
 //            ListData appointment2 = new ListData("으에에엥2");
@@ -217,14 +217,35 @@ public class MainActivity extends AppCompatActivity {
             //Log.d("현재 시간? ", current.year + "년 " + current.month + "월 " + current.day + "일 " + current.hour + "시 " + current.minute + "분");
 
 
-
-            recyclerView.setAdapter(new ListAdapter(getContext(), appointmentList,0));
+            adapter = new ListAdapter(getContext(), appointmentList,0);
+            recyclerView.setAdapter(adapter);
 
             return rootView;
+        }
+        public void onResume(){
+            super.onResume();
+            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
+
+            appointmentList.clear();
+            Cursor cursor = mDBHelper.open().mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
+            while(cursor.moveToNext()){
+                ListData temp = new ListData(cursor);
+//                Log.d("메인액티비티",temp.dDay+"");
+                if(!temp.isComplete){
+                    appointmentList.add(temp);
+                }
+            }
+            cursor.close();
+            mDBHelper.close();
+            adapter.notifyDataSetChanged();
         }
     }
 
     public static class CompletedListFragment extends Fragment {
+
+        ListAdapter adapter;
+        List<ListData> appointmentList=new ArrayList<>();
+
         public CompletedListFragment(){
 
         }
@@ -237,19 +258,37 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(layoutManager);
 
-            List<ListData> appointmentList=new ArrayList<>();
 
 
             Day current = new Day();
             current = current.currentTime();
-            ListData appointment = new ListData("이건 끝난곳",current);
-            appointment.isSuccess = false;
-            appointment.isComplete = true;
-            appointmentList.add(appointment);
+//            ListData appointment = new ListData("이건 끝난곳",current);
+//            appointment.isSuccess = false;
+//            appointment.isComplete = true;
+//            appointmentList.add(appointment);
 
-            recyclerView.setAdapter(new ListAdapter(getContext(), appointmentList, 0));
+            adapter = new ListAdapter(getContext(), appointmentList, 0);
+            recyclerView.setAdapter(adapter);
 
             return rootView;
+        }
+
+        public void onResume(){
+            super.onResume();
+            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
+
+            appointmentList.clear();
+            Cursor cursor = mDBHelper.open().mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
+            while(cursor.moveToNext()){
+                ListData temp = new ListData(cursor);
+                if(temp.isComplete){
+                    appointmentList.add(temp);
+//                    Log.d("d","들옴");
+                }
+            }
+            cursor.close();
+            mDBHelper.close();
+            adapter.notifyDataSetChanged();
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.yena.donotlate;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ public class ListData implements Serializable{
 
 
 
+    int id;
     String title;
     String placeName, placeID;
     Day dDay;
@@ -42,13 +44,22 @@ public class ListData implements Serializable{
     }
 
     ListData(Cursor cursor){
-        try{
+            id = cursor.getInt(0);
             title = cursor.getString(1);
             placeID = cursor.getString(2);
             placeName = cursor.getString(3);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.KOREA);
-            startDay = new Day(sdf.parse(cursor.getString(4)));
-            dDay = new Day(sdf.parse(cursor.getString(5)));
+            try {
+                startDay = new Day(sdf.parse(cursor.getString(4)));
+            }catch (Exception e){
+
+            }
+            try {
+                dDay = new Day(sdf.parse(cursor.getString(5)));
+            }catch (Exception e){
+
+            }
+            //            Log.d("ListData", cursor.getString(5));
             dLatitude = cursor.getDouble(6);
             dLongitude = cursor.getDouble(7);
             startLatitude = cursor.getDouble(8);
@@ -58,9 +69,6 @@ public class ListData implements Serializable{
             isSuccess = (cursor.getInt(12) == 1);
             isStarted = (cursor.getInt(13) == 1);
 
-        }catch (Exception e){
-
-        }
 
     }
 }

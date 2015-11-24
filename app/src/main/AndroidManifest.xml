@@ -48,6 +48,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBxn33JhfgaE6Iv2M7xU8qBw35yYyn17-M" />
 
+        <service
+            android:name=".GpsService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".InternetService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
