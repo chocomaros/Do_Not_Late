@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false">
+    <item android:drawable="@drawable/ic_bird_fly01" android:duration="100"/>
+    <item android:drawable="@drawable/ic_bird_fly02" android:duration="100"/>
+    <item android:drawable="@drawable/ic_bird_fly03" android:duration="100"/>
+    <item android:drawable="@drawable/ic_bird_fly01" android:duration="100"/>
+</animation-list>
