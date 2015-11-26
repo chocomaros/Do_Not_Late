@@ -5,6 +5,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -28,9 +29,6 @@ public class GoingGraphicActivity extends AppCompatActivity {
         progressBar.setProgress(percent);
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
         data = appointmentList.get(0);
-        setImagePosition();
-        ivBird.setScaleType(ImageView.ScaleType.MATRIX);
-        ivBird.setImageMatrix(matrixImage);
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -38,9 +36,6 @@ public class GoingGraphicActivity extends AppCompatActivity {
         ivBird.setBackgroundResource(R.drawable.bird_animation);
         AnimationDrawable frameAnimation = (AnimationDrawable) ivBird.getBackground();
         frameAnimation.start();
-        setImagePosition();
-        ivBird.setScaleType(ImageView.ScaleType.MATRIX);
-        ivBird.setImageMatrix(matrixImage);
         super.onWindowFocusChanged(hasFocus);
     }
 
