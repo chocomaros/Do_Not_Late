@@ -196,11 +196,7 @@ public class AddDataActivity extends AppCompatActivity {
             // 디비에 저장하기
             if(checkTitle && checkDate && checkTime && checkPlace){
                 if(!isTimePassed()){
-                    ListDataDBHelper mDBHelper = new ListDataDBHelper(getApplicationContext());
-                    mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null,'"+listData.title+"','"+listData.placeID
-                            +"','"+listData.placeName+"',null,'"+listData.dDay.toString()+"', "+listData.dLatitude+", "+listData.dLongitude+", 0, 0, 0, 0 , 0, 0)");
-                    mDBHelper.close();
-//                    Log.d("AdapterActivity",listData.dDay+"");
+                   YenaDAO.insertData(getApplicationContext(),listData);
                     finish();
                 }
                 else{

@@ -67,7 +67,6 @@ public class Day implements Serializable{
         long thisTime = thisCalendar.getTimeInMillis();
         long time =  calendar.getTimeInMillis();
 
-        //TODO month가 0이 1월이므로 오차생기는지 확인해야함
         long result = ((thisTime - time) > 0) ? (thisTime - time) : (time - thisTime);
         result = result / (1000 * 60); //// 분 단위
 

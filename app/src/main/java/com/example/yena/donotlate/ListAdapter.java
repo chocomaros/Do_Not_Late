@@ -70,10 +70,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if(position == 0){
                 tempHolder.btStart.setEnabled(true);
+
                 tempHolder.btStart.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        //TODO 시작쨔응
                     }
                 });
             }

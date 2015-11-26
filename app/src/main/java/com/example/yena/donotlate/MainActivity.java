@@ -26,14 +26,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
@@ -186,37 +178,6 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(layoutManager);
 
-            //TODO 지워야될거 test하는거
-            Day current = new Day();
-            current = current.currentTime();
-
-//            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
-////            mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null, '존나 하기 시러','adf'," +
-////                    "'연구실임','2015-11-24 03:33','2015-11-24 05:00', 1.13, 2.13, 3.3, 4.1, 1, 0 , 0, 0)");
-//            Cursor cursor = mDBHelper.open().mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
-//            while(cursor.moveToNext()){
-//                ListData temp = new ListData(cursor);
-//                appointmentList.add(temp);
-//            }
-//            cursor.close();
-//            mDBHelper.close();
-//            ListData appointment = new ListData("집가야지",current);
-//            ListData appointment1 = new ListData("가나다라마바사아자차카타파하다");
-//            ListData appointment2 = new ListData("으에에엥2");
-//            ListData appointment3 = new ListData("으에에엥3");
-//            ListData appointment4 = new ListData("으에에엥4");
-//            ListData appointment5 = new ListData("으에에엥5");
-//            ListData appointment6 = new ListData("으에에엥6");
-//            appointmentList.add(appointment);
-//            appointmentList.add(appointment1);
-//            appointmentList.add(appointment2);
-//            appointmentList.add(appointment3);
-//            appointmentList.add(appointment4);
-//            appointmentList.add(appointment5);
-//            appointmentList.add(appointment6);
-            //Log.d("현재 시간? ", current.year + "년 " + current.month + "월 " + current.day + "일 " + current.hour + "시 " + current.minute + "분");
-
-
             adapter = new ListAdapter(getContext(), appointmentList,0);
             recyclerView.setAdapter(adapter);
 
@@ -224,25 +185,13 @@ public class MainActivity extends AppCompatActivity {
         }
         public void onResume(){
             super.onResume();
-            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
-
             appointmentList.clear();
-            Cursor cursor = mDBHelper.open().mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
-            while(cursor.moveToNext()){
-                ListData temp = new ListData(cursor);
-//                Log.d("메인액티비티",temp.dDay+"");
-                if(!temp.isComplete){
-                    appointmentList.add(temp);
-                }
-            }
-            cursor.close();
-            mDBHelper.close();
+            appointmentList.addAll(YenaDAO.getCurrentList(getActivity().getApplicationContext()));
             adapter.notifyDataSetChanged();
         }
     }
 
     public static class CompletedListFragment extends Fragment {
-
         ListAdapter adapter;
         List<ListData> appointmentList=new ArrayList<>();
 
@@ -258,15 +207,6 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(layoutManager);
 
-
-
-            Day current = new Day();
-            current = current.currentTime();
-//            ListData appointment = new ListData("이건 끝난곳",current);
-//            appointment.isSuccess = false;
-//            appointment.isComplete = true;
-//            appointmentList.add(appointment);
-
             adapter = new ListAdapter(getContext(), appointmentList, 0);
             recyclerView.setAdapter(adapter);
 
@@ -275,19 +215,9 @@ public class MainActivity extends AppCompatActivity {
 
         public void onResume(){
             super.onResume();
-            ListDataDBHelper mDBHelper = new ListDataDBHelper(getActivity().getApplicationContext());
 
             appointmentList.clear();
-            Cursor cursor = mDBHelper.open().mDB.rawQuery("select * from "+ListData.TABLE_NAME, null);
-            while(cursor.moveToNext()){
-                ListData temp = new ListData(cursor);
-                if(temp.isComplete){
-                    appointmentList.add(temp);
-//                    Log.d("d","들옴");
-                }
-            }
-            cursor.close();
-            mDBHelper.close();
+            appointmentList.addAll(YenaDAO.getCompletedList(getActivity().getApplicationContext()));
             adapter.notifyDataSetChanged();
         }
     }
