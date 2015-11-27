@@ -11,36 +11,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/textView"
+        android:textSize="40sp"
+        android:id="@+id/tv_name"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="54dp" />
+        android:layout_marginTop="45dp"
+        android:padding="5dp"/>
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:id="@+id/progressBar"
-        android:layout_marginBottom="58dp"
-        android:layout_above="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:max ="100"/>
+        android:max ="100"
+        android:maxHeight="20dp"
+        android:layout_marginBottom="70dp"
+        android:layout_above="@+id/bt_list_gg"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/textView2"
-        android:layout_alignEnd="@+id/button"
-        android:layout_above="@+id/button"
-        android:layout_alignStart="@+id/textView"
-        android:layout_alignTop="@+id/button" />
+        android:textSize="30sp"
+        android:id="@+id/tv_remain_time"
+        android:layout_below="@+id/tv_name"
+        android:layout_centerHorizontal="true"
+        android:padding="10dp"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
+        android:text="목록 보기"
+        android:id="@+id/bt_list_gg"
+        android:background="@drawable/bt_basic"
+        android:layout_marginTop="10dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
@@ -50,5 +55,15 @@
         android:id="@+id/bird_image"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="New Text"
+    android:textSize="25sp"
+    android:id="@+id/tv_remain_distance"
+    android:padding="10dp"
+    android:layout_above="@+id/bt_list_gg"
+    android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

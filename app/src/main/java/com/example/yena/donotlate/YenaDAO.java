@@ -74,7 +74,21 @@ public class YenaDAO {
     public static void insertData(Context context, ListData listData){
         ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
         mDBHelper.open().mDB.execSQL("insert into " + ListData.TABLE_NAME + " values (null,'"+listData.title+"','"+listData.placeID
-                +"','"+listData.placeName+"',null,'"+listData.dDay.toString()+"', "+listData.dLatitude+", "+listData.dLongitude+", 0, 0, 0, 0 , 0)");
+                +"','"+listData.placeName+"',null,'"+listData.dDay.toString()+"', "+listData.dLatitude+", "+listData.dLongitude+", 0, 0, 0, 0 , 0);");
+        mDBHelper.close();
+    }
+
+    public static void deleteData(Context context, ListData listData){
+        ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
+        mDBHelper.open().mDB.execSQL("delete from " + ListData.TABLE_NAME + " where ID = " + listData.id + ";");
+        mDBHelper.close();
+    }
+
+    public static void startInformationUpdate(Context context, ListData listData){
+        ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
+        mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.IS_STARTED+ " = 0, "
+                + ListData.S_DAY + " = 'null', " +ListData.S_LATITUDE+" = 0, "+ListData.S_LONGITUDE+" = 0  where " + ListData.ID + " = " +listData.id+ ";");
+
         mDBHelper.close();
     }
 }

@@ -35,10 +35,10 @@ public class ListDataDBHelper {
                     +ListData.PLACE_NAME+" text  , "                    //3
                     +ListData.S_DAY+" text, "                           //4
                     +ListData.D_DAY+" text not null , "                 //5
-                    +ListData.D_LATITUDE+"double , "                    //6
-                    +ListData.D_LONGITUDE+"double , "                   //7
-                    +ListData.S_LATITUDE+"double , "                    //8
-                    +ListData.S_LONGITUDE+"double , "                   //9
+                    +ListData.D_LATITUDE+" double , "                    //6
+                    +ListData.D_LONGITUDE+" double , "                   //7
+                    +ListData.S_LATITUDE+" double , "                    //8
+                    +ListData.S_LONGITUDE+" double , "                   //9
                     +ListData.IS_STARTED +" int , "                     //10
                     +ListData.IS_COMPLETED+" int , "                    //11
                     +ListData.IS_SUCCESS+" int ); ");                   //12

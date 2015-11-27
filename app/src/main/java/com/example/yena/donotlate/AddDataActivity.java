@@ -252,6 +252,7 @@ public class AddDataActivity extends AppCompatActivity {
                 .setPositiveButton("확인", new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int whichButton){
                         tvPlace.findViewById(R.id.tv_insert_place);
+                        listData.placeName = input.getText().toString();
                         tvPlace.setText("장소 => " +input.getText());
                     }
                 });

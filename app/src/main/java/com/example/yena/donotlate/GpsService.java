@@ -1,6 +1,9 @@
 package com.example.yena.donotlate;
 
+import android.*;
+import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +17,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ServiceCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,6 +32,7 @@ import java.util.List;
 
 public class GpsService extends Service implements LocationListener{
     public static final float DEFAULT_DISTANCE = 50;
+    private static final int REQUEST_CODE_LOCATION = 2;
 
     private Context context;
 
@@ -66,18 +72,20 @@ public class GpsService extends Service implements LocationListener{
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
         data = appointmentList.get(0);
 
-        if(checkIn(data,currentLocation)){
+        if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
             appointmentList.get(0).isComplete = true;
             appointmentList.get(0).isSuccess = true;
             appointmentList.get(0).isStarted = false;
-            //TODO 이거 완료된거 이제
+            YenaDAO.updateState(getApplicationContext(),data);
+            onDestroy();
         }
         else{
-            if(timePassed(data)){
+            if(timePassed(data)){       /// 도착 못하고 끝난거
                 appointmentList.get(0).isComplete = true;
                 appointmentList.get(0).isSuccess = false;
                 appointmentList.get(0).isStarted = false;
-                //TODO 완료 못하고 시간 지난거
+                YenaDAO.updateState(getApplicationContext(),data);
+                onDestroy();
             }
         }
 
@@ -86,8 +94,10 @@ public class GpsService extends Service implements LocationListener{
 
     @TargetApi(23)
     public Location getLocation(){
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+
+//            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },
+//                    LocationService.MY_PERMISSION_ACCESS_COARSE_LOCATION );
         }
 
         try {
@@ -141,6 +151,25 @@ public class GpsService extends Service implements LocationListener{
 
         return location;
     }
+
+//    private void checkPermission() {
+//        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED
+//                || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//
+//            if (.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+//                // Explain to the user why we need to write the permission.
+//                Toast.makeText(this, "Read/Write external storage", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            // MY_PERMISSION_REQUEST_STORAGE is an
+//            // app-defined int constant
+//
+//        } else {
+//            // 다음 부분은 항상 허용일 경우에 해당이 됩니다.
+//        }
+//    }
 
     public Calendar getTime(){
         Calendar calendar = Calendar.getInstance();

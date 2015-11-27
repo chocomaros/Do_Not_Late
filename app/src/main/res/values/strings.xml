@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name">Do Not Late</string>
+    <string name="app_name">언제까지 지각할래</string>
     <string name="action_settings">설정</string>
-    <string name="title_activity_main">언제까지 지각할래</string>
     <string name="current_tab">진행중인 목록</string>
     <string name="completed_tab">완료된 목록</string>
     <string name="title_activity_maps">Map</string>

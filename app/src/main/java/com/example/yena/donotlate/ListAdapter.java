@@ -74,7 +74,16 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 tempHolder.btStart.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO 시작쨔응
+                        //TODO 시작쨔응 되나?
+                        ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
+                        mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.IS_COMPLETED + " = " + 0 + ", "
+                                + ListData.IS_SUCCESS + " = " + 0 + ", " + ListData.IS_STARTED + " = " + 1 + " where " + ListData.ID + " = " + item.id + ";");
+                        mDBHelper.close();
+                        for(int i = 1; i< items.size(); i++){
+                            if(items.get(i).isStarted){
+                                YenaDAO.startInformationUpdate(context,items.get(i));
+                            }
+                        }
                     }
                 });
             }

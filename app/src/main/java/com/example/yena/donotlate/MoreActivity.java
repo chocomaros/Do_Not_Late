@@ -2,15 +2,19 @@ package com.example.yena.donotlate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,10 +26,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MoreActivity extends AppCompatActivity {
+
+    private static final String MESSAGE ="저는 못난이 입니다.ㅠㅠ 행복한 하루 되십시오~";
+
     TextView tvTitle, tvDate, tvTime, tvPlace;
     MapView mapView;
     GoogleMap googleMap;
     ListData data;
+    String name, number; /// 문자보낼거
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,19 +104,18 @@ public class MoreActivity extends AppCompatActivity {
         if (id == R.id.action_delete) {
             //TODO 삭제하는거 여기에 만들어
             if(data.isComplete){
-                printAlertDialog("삭제","정말로 삭제하시겠습니까?");
+                completedPrintAlertDialog("삭제", "정말로 삭제하시겠습니까?");
 
             } else{
-
+                currentPrintAlertDialog("삭제", "다른 사람에게 문자를 보내야 가능합니다.\n보내시겠습니까?");
             }
-
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    void printAlertDialog(String title, String message){
+    void currentPrintAlertDialog(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomActionBarTheme));
 
         builder.setTitle(title)
@@ -121,7 +129,28 @@ public class MoreActivity extends AppCompatActivity {
                 })
                 .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        deleteInDB();
+                        showPhoneNumber();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    void completedPrintAlertDialog(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomActionBarTheme));
+
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        YenaDAO.deleteData(getApplicationContext(), data);
                         finish();
                     }
                 });
@@ -129,9 +158,60 @@ public class MoreActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    void deleteInDB(){
-        ListDataDBHelper mDBHelper = new ListDataDBHelper(getApplicationContext());
-        mDBHelper.open().mDB.execSQL("delete from "+ListData.TABLE_NAME+" where ID = "+data.id+";");
-        mDBHelper.close();
+    void sendingPrintAlertDialog(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.CustomActionBarTheme));
+
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        sendMessage();
+                        YenaDAO.deleteData(getApplicationContext(),data);
+                        finish();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    void sendMessage(){
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(number, null, MESSAGE, null, null);
+    }
+
+    void showPhoneNumber(){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setData(ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK)
+        {
+            Cursor cursor = getContentResolver().query(data.getData(),
+                    new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                            ContactsContract.CommonDataKinds.Phone.NUMBER}, null, null, null);
+            cursor.moveToFirst();
+            name = cursor.getString(0);        //이름 얻어오기
+            number = cursor.getString(1);     //번호 얻어오기
+            cursor.close();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(name != null || number != null){
+            sendingPrintAlertDialog("문자", name + "님에게 문자를 보내시겠습니까?");
+            Log.d("문자보내기","이름 : "+name+" 번호 : "+number);
+        } else{
+            Toast.makeText(getBaseContext(),"이름이나 번호 널값",Toast.LENGTH_LONG);
+            Log.d("이름이나 번호 널값","");
+        }
     }
 }
