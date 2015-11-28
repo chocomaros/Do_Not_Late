@@ -32,6 +32,7 @@ public class GoingGraphicActivity extends AppCompatActivity {
         ivBird = (ImageView) findViewById(R.id.bird_image);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
         progressBar.setProgress(percent);
+        //TODO 완료되었는지 처리되는 중에 여기 실행되서 에러남
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
         data = appointmentList.get(0);
 

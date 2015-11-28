@@ -76,18 +76,18 @@ public class GpsService extends Service implements LocationListener{
             data = appointmentList.get(0);
 
             if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
-                appointmentList.get(0).isComplete = true;
-                appointmentList.get(0).isSuccess = true;
-                appointmentList.get(0).isStarted = false;
+                data.isComplete = true;
+                data.isSuccess = true;
+                data.isStarted = false;
                 YenaDAO.updateState(context,data);
                 onDestroy();
             }
             else{
                 if(timePassed(data)){       /// 도착 못하고 끝난거
                     Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG);
-                    appointmentList.get(0).isComplete = true;
-                    appointmentList.get(0).isSuccess = false;
-                    appointmentList.get(0).isStarted = false;
+                    data.isComplete = true;
+                    data.isSuccess = false;
+                    data.isStarted = false;
                     YenaDAO.updateState(context,data);
                     onDestroy();
                 }
