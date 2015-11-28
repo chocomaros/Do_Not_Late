@@ -15,23 +15,21 @@ import java.util.ArrayList;
 
 public class StartActivity extends Activity {
 
-    GpsService gpsService;
+//    GpsService gpsService;
     ImageView ivLate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        gpsService = new GpsService(getApplicationContext());
+        Intent gpsIntent = new Intent(this,GpsService.class);
+        startService(gpsIntent);
         if (!isStarted()) {
             setContentView(R.layout.activity_start);
 
             ivLate = (ImageView)findViewById(R.id.late_image);
              Button showList = (Button) findViewById(R.id.bt_list);
 //
-//            gpsService = new GpsService(getApplicationContext());
-//            Intent intent = new Intent("gps_start_service");
-//            gpsService.startService(intent);
-//
-//            Log.d("StartActivity", "위도 : " + gpsService.latitude + "경도 : " +gpsService.longitude);
 
 
             showList.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +45,12 @@ public class StartActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Intent gpsIntent = new Intent(this,GpsService.class);
+        startService(gpsIntent);
+  ;
+
+//        Log.d("StartActivity", "위도 : " + gpsService.latitude + "경도 : " + gpsService.longitude);
+
         if (isStarted()) {
             Intent intent = new Intent(StartActivity.this, GoingGraphicActivity.class);
             startActivity(intent);

@@ -84,6 +84,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 YenaDAO.startInformationUpdate(context,items.get(i));
                             }
                         }
+
                     }
                 });
             }

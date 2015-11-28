@@ -13,6 +13,7 @@ import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -34,7 +35,7 @@ public class GpsService extends Service implements LocationListener{
     public static final float DEFAULT_DISTANCE = 50;
     private static final int REQUEST_CODE_LOCATION = 2;
 
-    private Context context;
+    private Context context = this;
 
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
@@ -48,66 +49,71 @@ public class GpsService extends Service implements LocationListener{
 
     protected LocationManager locationManager;
 
-    public GpsService(){
-
-    }
-    public GpsService(Context context) {
-        this.context = context;
-        getLocation();
-    }
+//    public GpsService(){
+//        context = getApplicationContext();
+//    }
+//    public GpsService(Context context) {
+//        this.context = context;
+//    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(getApplicationContext(), "서비스 시작", Toast.LENGTH_LONG);
+        Log.d("서비스 온크리에이트", "들어옴?");
+        Toast.makeText(context, "서비스 시작", Toast.LENGTH_LONG);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        Log.d("온스타트커맨드","들어옴?");
         ListData data;
         Location currentLocation;
         currentLocation = getLocation();
-
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
-        data = appointmentList.get(0);
 
-        if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
-            appointmentList.get(0).isComplete = true;
-            appointmentList.get(0).isSuccess = true;
-            appointmentList.get(0).isStarted = false;
-            YenaDAO.updateState(getApplicationContext(),data);
-            onDestroy();
-        }
-        else{
-            if(timePassed(data)){       /// 도착 못하고 끝난거
+        if(haveData(appointmentList)){
+            Log.d("서비스","현재 데이터 있대");
+            data = appointmentList.get(0);
+
+            if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
                 appointmentList.get(0).isComplete = true;
-                appointmentList.get(0).isSuccess = false;
+                appointmentList.get(0).isSuccess = true;
                 appointmentList.get(0).isStarted = false;
-                YenaDAO.updateState(getApplicationContext(),data);
+                YenaDAO.updateState(context,data);
                 onDestroy();
             }
+            else{
+                if(timePassed(data)){       /// 도착 못하고 끝난거
+                    Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG);
+                    appointmentList.get(0).isComplete = true;
+                    appointmentList.get(0).isSuccess = false;
+                    appointmentList.get(0).isStarted = false;
+                    YenaDAO.updateState(context,data);
+                    onDestroy();
+                }
+            }
         }
-
+        else{
+        }
         return START_STICKY;
     }
-
     @TargetApi(23)
     public Location getLocation(){
-        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+        if(Build.VERSION.SDK_INT>=23) {
+            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-//            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },
-//                    LocationService.MY_PERMISSION_ACCESS_COARSE_LOCATION );
+//                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+//                        LocationService.MY_PERMISSION_ACCESS_COARSE_LOCATION);
+            }
         }
-
         try {
-            locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-                Toast.makeText(getApplicationContext(),"위치를 가져올 수 없습니다.",Toast.LENGTH_LONG);
+                Toast.makeText(context,"위치를 가져올 수 없습니다.",Toast.LENGTH_LONG);
             } else {
                 this.canGetLocation = true;
                 // 네트워크 정보로 부터 위치값 가져오기
@@ -194,6 +200,13 @@ public class GpsService extends Service implements LocationListener{
         if(current.getTimeInMillis() < dataCal.getTimeInMillis()){
             return false;
         } else return true;
+    }
+
+    Boolean haveData(ArrayList<ListData> arrayList){
+        if(arrayList.size() == 0){
+            return false;
+        }else
+            return true;
     }
 
     @Override
