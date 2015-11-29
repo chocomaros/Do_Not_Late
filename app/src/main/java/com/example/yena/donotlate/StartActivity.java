@@ -21,6 +21,7 @@ public class StartActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("스타트 액티비티", "온크리에이트");
 //        gpsService = new GpsService(getApplicationContext());
         Intent gpsIntent = new Intent(this,GpsService.class);
         startService(gpsIntent);
@@ -45,6 +46,7 @@ public class StartActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("스타트 액티비티", "온리줌");
         Intent gpsIntent = new Intent(this,GpsService.class);
         startService(gpsIntent);
   ;
@@ -52,6 +54,7 @@ public class StartActivity extends Activity {
 //        Log.d("StartActivity", "위도 : " + gpsService.latitude + "경도 : " + gpsService.longitude);
 
         if (isStarted()) {
+            Log.d("스타트액티비티 온리쥼","고잉으로 인텐트 보내는거");
             Intent intent = new Intent(StartActivity.this, GoingGraphicActivity.class);
             startActivity(intent);
             finish();

@@ -39,10 +39,6 @@ public class GpsService extends Service implements LocationListener{
 
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
-    boolean canGetLocation = false;
-
-    Location location;
-    double latitude, longitude;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
@@ -75,25 +71,31 @@ public class GpsService extends Service implements LocationListener{
             Log.d("서비스","현재 데이터 있대");
             data = appointmentList.get(0);
 
-            if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
-                data.isComplete = true;
-                data.isSuccess = true;
-                data.isStarted = false;
-                YenaDAO.updateState(context,data);
-                onDestroy();
-            }
-            else{
-                if(timePassed(data)){       /// 도착 못하고 끝난거
-                    Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG);
+            if(data.isStarted){
+                Log.d("서비스","시작된거 데이터있네");
+                if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
+                    Log.d("서비스","체크인 했대");
                     data.isComplete = true;
-                    data.isSuccess = false;
+                    data.isSuccess = true;
                     data.isStarted = false;
                     YenaDAO.updateState(context,data);
+                    Log.d("서비스", "디비에 업뎃했어");
                     onDestroy();
+                }
+                else{
+                    if(timePassed(data)){       /// 도착 못하고 끝난거
+                        Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG);
+                        data.isComplete = true;
+                        data.isSuccess = false;
+                        data.isStarted = false;
+                        YenaDAO.updateState(context,data);
+                        onDestroy();
+                    }
                 }
             }
         }
         else{
+            Log.d("서비스","현재 데이터 없어");
         }
         return START_STICKY;
     }
@@ -106,6 +108,7 @@ public class GpsService extends Service implements LocationListener{
 //                        LocationService.MY_PERMISSION_ACCESS_COARSE_LOCATION);
             }
         }
+        Location location = null;
         try {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -115,7 +118,6 @@ public class GpsService extends Service implements LocationListener{
             if (!isGPSEnabled && !isNetworkEnabled) {
                 Toast.makeText(context,"위치를 가져올 수 없습니다.",Toast.LENGTH_LONG);
             } else {
-                this.canGetLocation = true;
                 // 네트워크 정보로 부터 위치값 가져오기
                 if (isNetworkEnabled) {
                     locationManager.requestLocationUpdates(
@@ -127,9 +129,7 @@ public class GpsService extends Service implements LocationListener{
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         if (location != null) {
-                            // 위도 경도 저장
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
+                            Log.d("네트워크에서 정보 "," location은 널 아님");
                         }
                     }
                 }
@@ -143,8 +143,7 @@ public class GpsService extends Service implements LocationListener{
                         if (locationManager != null) {
                             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                             if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
+                                Log.d("gps에서 정보 "," location은 널 아님");
                             }
                         }
                     }

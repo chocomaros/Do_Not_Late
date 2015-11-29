@@ -65,11 +65,13 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /////////////////////// 여기는 안끝난거 뷰홀더
 
         if(holder instanceof NotCompleteViewHolder){
-            NotCompleteViewHolder tempHolder = (NotCompleteViewHolder) holder;
+            final NotCompleteViewHolder tempHolder = (NotCompleteViewHolder) holder;
             tempHolder.title.setText(item.title);
 
-            if(position == 0){
+            if(position == 0 && !(item.isStarted)){
+                tempHolder.btStart.setText("시작!");
                 tempHolder.btStart.setEnabled(true);
+                tempHolder.btStart.setBackgroundResource(R.drawable.bt_basic);
 
                 tempHolder.btStart.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -79,6 +81,9 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.IS_COMPLETED + " = " + 0 + ", "
                                 + ListData.IS_SUCCESS + " = " + 0 + ", " + ListData.IS_STARTED + " = " + 1 + " where " + ListData.ID + " = " + item.id + ";");
                         mDBHelper.close();
+                        tempHolder.btStart.setText("시작했음!");
+                        tempHolder.btStart.setEnabled(false);
+                        tempHolder.btStart.setBackgroundResource(R.drawable.bt_enabled);
                         for(int i = 1; i< items.size(); i++){
                             if(items.get(i).isStarted){
                                 YenaDAO.startInformationUpdate(context,items.get(i));
@@ -87,6 +92,14 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     }
                 });
+            }
+            else if(position == 0 && item.isStarted){
+                tempHolder.btStart.setText("시작했음!");
+                tempHolder.btStart.setEnabled(false);
+                tempHolder.btStart.setBackgroundResource(R.drawable.bt_enabled);
+            }
+            else{
+                tempHolder.btStart.setBackgroundResource(R.drawable.bt_enabled);
             }
 
             tempHolder.btMore.setOnClickListener(new View.OnClickListener() {

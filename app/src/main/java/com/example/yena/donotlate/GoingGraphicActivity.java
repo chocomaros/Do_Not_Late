@@ -5,6 +5,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -28,38 +29,51 @@ public class GoingGraphicActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("고잉","온크리에이트");
         setContentView(R.layout.activity_going_graphic);
         ivBird = (ImageView) findViewById(R.id.bird_image);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
         progressBar.setProgress(percent);
-        //TODO 완료되었는지 처리되는 중에 여기 실행되서 에러남
-        ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
-        data = appointmentList.get(0);
 
-        tvName = (TextView)findViewById(R.id.tv_name);
-        tvRemainTime = (TextView)findViewById(R.id.tv_remain_time);
-        tvRemainDistance = (TextView)findViewById(R.id.tv_remain_distance);
+        if(!isStarted()){
+            Log.d("고잉","스타트로 보내기");
+            Intent intent = new Intent(GoingGraphicActivity.this, StartActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        else{
+            ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
+            data = appointmentList.get(0);
 
-        tvName.setText(data.title);
-        tvRemainTime.setText("시간 얼마나 남았지");
-        tvRemainDistance.setText("거리 얼마나 남았지");
-        btList = (Button)findViewById(R.id.bt_list_gg);
+            tvName = (TextView)findViewById(R.id.tv_name);
+            tvRemainTime = (TextView)findViewById(R.id.tv_remain_time);
+            tvRemainDistance = (TextView)findViewById(R.id.tv_remain_distance);
 
-        btList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(GoingGraphicActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
+            tvName.setText(data.title);
+            tvRemainTime.setText("시간 얼마나 남았지");
+            tvRemainDistance.setText("거리 얼마나 남았지");
+            btList = (Button)findViewById(R.id.bt_list_gg);
+
+            btList.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(GoingGraphicActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("고잉 온리줌", "서비스 시작 전");
+        startService(new Intent(this, GpsService.class));
+        Log.d("고잉 온리쥼", "여긴 왔니?");
         if(!isStarted()){
             Intent intent = new Intent(GoingGraphicActivity.this, StartActivity.class);
             startActivity(intent);
+            Log.d("고잉", "여긴 들어오니?");
             finish();
         }
     }
@@ -89,6 +103,7 @@ public class GoingGraphicActivity extends AppCompatActivity {
 
     Boolean isStarted(){
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
+        Log.d("isStarted","여긴 오니?");
         if(appointmentList.size() == 0){
             return false;
         }else {
