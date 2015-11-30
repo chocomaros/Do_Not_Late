@@ -91,5 +91,12 @@ public class YenaDAO {
 
         mDBHelper.close();
     }
+    public static void gpsStartUpdate(Context context, ListData listData){
+        ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
+        mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.S_DAY + " = '"+listData.dDay.toString() + "',"  +ListData.S_LATITUDE+ " = " + listData.startLatitude +
+                ", "+ListData.S_LONGITUDE+" = "+listData.startLongitude+ "  where " + ListData.ID + " = " +listData.id+ ";");
+
+        mDBHelper.close();
+    }
 }
 

@@ -81,6 +81,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.IS_COMPLETED + " = " + 0 + ", "
                                 + ListData.IS_SUCCESS + " = " + 0 + ", " + ListData.IS_STARTED + " = " + 1 + " where " + ListData.ID + " = " + item.id + ";");
                         mDBHelper.close();
+                        context.startService(new Intent(context, GpsService.class));
                         tempHolder.btStart.setText("시작했음!");
                         tempHolder.btStart.setEnabled(false);
                         tempHolder.btStart.setBackgroundResource(R.drawable.bt_enabled);

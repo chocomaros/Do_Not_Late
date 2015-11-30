@@ -44,33 +44,36 @@ public class GpsService extends Service implements LocationListener{
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
 
     protected LocationManager locationManager;
-
-//    public GpsService(){
-//        context = getApplicationContext();
-//    }
-//    public GpsService(Context context) {
-//        this.context = context;
-//    }
+    private Location currentLocation;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d("서비스 온크리에이트", "들어옴?");
-        Toast.makeText(context, "서비스 시작", Toast.LENGTH_LONG);
+        Toast.makeText(context, "서비스 시작", Toast.LENGTH_LONG).show();
+        ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
+        if(!haveData(appointmentList)) {
+            onDestroy();
+        }
+        else {
+            Log.d("서비스", "현재 데이터 있대");
+            ListData data = appointmentList.get(0);
+            currentLocation = getLocation();
+            data.startLatitude = currentLocation.getLatitude();
+            data.startLongitude = currentLocation.getLongitude();
+            YenaDAO.gpsStartUpdate(context,data);
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("온스타트커맨드","들어옴?");
+        Log.d("온스타트커맨드", "들어옴?");
         ListData data;
-        Location currentLocation;
         currentLocation = getLocation();
+
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
-
         if(haveData(appointmentList)){
-            Log.d("서비스","현재 데이터 있대");
             data = appointmentList.get(0);
-
             if(data.isStarted){
                 Log.d("서비스","시작된거 데이터있네");
                 if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
@@ -84,7 +87,7 @@ public class GpsService extends Service implements LocationListener{
                 }
                 else{
                     if(timePassed(data)){       /// 도착 못하고 끝난거
-                        Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG);
+                        // Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG).show();
                         data.isComplete = true;
                         data.isSuccess = false;
                         data.isStarted = false;
@@ -92,10 +95,11 @@ public class GpsService extends Service implements LocationListener{
                         onDestroy();
                     }
                 }
-            }
         }
-        else{
-            Log.d("서비스","현재 데이터 없어");
+            else{
+
+            }
+
         }
         return START_STICKY;
     }
@@ -104,8 +108,8 @@ public class GpsService extends Service implements LocationListener{
         if(Build.VERSION.SDK_INT>=23) {
             if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-//                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-//                        LocationService.MY_PERMISSION_ACCESS_COARSE_LOCATION);
+//                ActivityCompat.requestPMISSION_ACCESS_COARSE_LOCATION);ermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+//                        LocationService.MY_PER
             }
         }
         Location location = null;
@@ -116,7 +120,7 @@ public class GpsService extends Service implements LocationListener{
 
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-                Toast.makeText(context,"위치를 가져올 수 없습니다.",Toast.LENGTH_LONG);
+                Toast.makeText(context,"위치를 가져올 수 없습니다.",Toast.LENGTH_LONG).show();
             } else {
                 // 네트워크 정보로 부터 위치값 가져오기
                 if (isNetworkEnabled) {
@@ -126,8 +130,7 @@ public class GpsService extends Service implements LocationListener{
                             MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
                     if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         if (location != null) {
                             Log.d("네트워크에서 정보 "," location은 널 아님");
                         }
@@ -156,25 +159,6 @@ public class GpsService extends Service implements LocationListener{
 
         return location;
     }
-
-//    private void checkPermission() {
-//        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED
-//                || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//
-//            if (.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-//                // Explain to the user why we need to write the permission.
-//                Toast.makeText(this, "Read/Write external storage", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            // MY_PERMISSION_REQUEST_STORAGE is an
-//            // app-defined int constant
-//
-//        } else {
-//            // 다음 부분은 항상 허용일 경우에 해당이 됩니다.
-//        }
-//    }
 
     public Calendar getTime(){
         Calendar calendar = Calendar.getInstance();

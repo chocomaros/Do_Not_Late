@@ -107,4 +107,10 @@ public class Day implements Serializable{
 
         return sdf.format(new Date(calendar.getTimeInMillis()));
     }
+
+    public Calendar toCalendar(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year,month,day,hour,minute);
+        return calendar;
+    }
 }
