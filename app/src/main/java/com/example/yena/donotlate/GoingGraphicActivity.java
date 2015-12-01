@@ -15,20 +15,16 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 public class GoingGraphicActivity extends AppCompatActivity {
 
@@ -44,6 +40,7 @@ public class GoingGraphicActivity extends AppCompatActivity {
     Timer countDownTimer;
     SharedPreferences  pref;
     Location currentLocation, destinationLocation, startLocation;
+    FrameLayout weightFrame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +49,14 @@ public class GoingGraphicActivity extends AppCompatActivity {
         setContentView(R.layout.activity_going_graphic);
         ivBird = (ImageView) findViewById(R.id.bird_image);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
+
+        weightFrame = (FrameLayout)findViewById(R.id.weight_frame);
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
         density  = getResources().getDisplayMetrics().density;
         displayWidth = outMetrics.widthPixels / density;
         pref = getSharedPreferences("pref",MODE_PRIVATE);
-
         if(!isStarted()){
             Log.d("고잉","스타트로 보내기");
             Intent intent = new Intent(GoingGraphicActivity.this, StartActivity.class);
@@ -73,7 +71,6 @@ public class GoingGraphicActivity extends AppCompatActivity {
             tvRemainTime = (TextView)findViewById(R.id.tv_remain_time);
             tvRemainDistance = (TextView)findViewById(R.id.tv_remain_distance);
 
-            tvName.setText(data.title);
             tvRemainTime.setText("시간 얼마나 남았지");
             tvRemainDistance.setText("거리 얼마나 남았지");
             btList = (Button)findViewById(R.id.bt_list_gg);
@@ -109,6 +106,7 @@ public class GoingGraphicActivity extends AppCompatActivity {
         }else{
             Log.d("destinationLocation", "La  "+destinationLocation.getLatitude()+" Long  " + destinationLocation.getLongitude());
             Log.d("startLocation", "La  "+startLocation.getLatitude()+" Long  " + startLocation.getLongitude());
+            tvName.setText(data.title);
             countDownTimer = new Timer( data.dDay.toCalendar().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), INTERVAL);
             Log.d("타임인 밀리스 차이", "" + (-Calendar.getInstance().getTimeInMillis())+"    "+ data.dDay.toCalendar().getTimeInMillis()+"   "+Calendar.getInstance().getTimeInMillis());
             countDownTimer.start();
@@ -144,17 +142,8 @@ public class GoingGraphicActivity extends AppCompatActivity {
 //        matrixImage.postTranslate(progressBar.getScrollX(),100);
 //    }
 
-    void setImagePosition() {
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) (ivBird.getLayoutParams());
-        int marginLeft = (int)(3*displayWidth * percent / 100) ;
-         if(percent <15){
-            marginLeft = 0;
-         }
-         else if(percent > 50){
-            marginLeft += 50;
-         }
-        lp.setMargins(marginLeft,0, 0, 0);
-        ivBird.setLayoutParams(lp);
+    void setImagePosition(int percent) {
+        weightFrame.setLayoutParams(new LinearLayout.LayoutParams(0,1,percent));
     }
 
     Boolean isStarted(){
@@ -187,14 +176,20 @@ public class GoingGraphicActivity extends AppCompatActivity {
         @Override
         public void onTick(long millisUntilFinished) {
             currentLocation.setLatitude(Double.parseDouble(pref.getString("LastLatitude", "37.5740339")));
-            currentLocation.setLongitude(Double.parseDouble(pref.getString("LastLongitude","126.97677499999998")));
-            Log.d("currentLocation", "La  "+currentLocation.getLatitude()+" Long  " + currentLocation.getLongitude());
+            currentLocation.setLongitude(Double.parseDouble(pref.getString("LastLongitude", "126.97677499999998")));
+            Log.d("currentLocation", "La  " + currentLocation.getLatitude() + " Long  " + currentLocation.getLongitude());
             try {
-                tvRemainTime.setText("완료되기 까지 " + String.format("%02d:%02d:%02d", millisUntilFinished / 3600000, (millisUntilFinished % 3600000) / 60000, (millisUntilFinished % 60000) / 1000));
-                tvRemainDistance.setText("남은 거리: " + (int)(currentLocation.distanceTo(destinationLocation))+"m");
-                percent = (int)(startLocation.distanceTo(startLocation)/currentLocation.distanceTo(destinationLocation));
+                tvRemainTime.setText(" 완료까지\n"+ String.format("%02d:%02d:%02d", millisUntilFinished / 3600000, (millisUntilFinished % 3600000) / 60000, (millisUntilFinished % 60000) / 1000));
+                tvRemainDistance.setText("남은 거리: " + (int) (currentLocation.distanceTo(destinationLocation)) + "m");
+                Log.d("총 거리"," "+startLocation.distanceTo(destinationLocation));
+                Log.d("남은 거리",""+currentLocation.distanceTo(destinationLocation));
+                percent = (int)((startLocation.distanceTo(destinationLocation)/startLocation.distanceTo(currentLocation))*100);
+                if(percent <= 0){
+                    percent = 0;
+                }
+                Log.d("percent",""+percent);
                 progressBar.setProgress(percent);
-                setImagePosition();
+                setImagePosition(percent);
             }
             catch (Exception e){
                 e.printStackTrace();

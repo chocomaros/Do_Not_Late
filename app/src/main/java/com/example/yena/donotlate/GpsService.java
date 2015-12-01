@@ -32,9 +32,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GpsService extends Service implements LocationListener{
     public static final float DEFAULT_DISTANCE = 50;
+    public static final int TIMER_PERIOD = 60*1000;
 
     private SharedPreferences pref;
     private Context context = this;
@@ -48,7 +51,7 @@ public class GpsService extends Service implements LocationListener{
     protected LocationManager locationManager;
     private Location currentLocation;
 
-
+    Timer timer;
 
     @Override
     public void onCreate() {
@@ -57,7 +60,7 @@ public class GpsService extends Service implements LocationListener{
         Toast.makeText(context, "서비스 시작", Toast.LENGTH_LONG).show();
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
         if(!haveData(appointmentList)) {
-            onDestroy();
+            stopSelf();
         }
         else {
             pref = getSharedPreferences("pref",MODE_PRIVATE);
@@ -67,52 +70,33 @@ public class GpsService extends Service implements LocationListener{
             data.startLongitude = Double.parseDouble(pref.getString("LastLongitude","126.97677499999998"));
             data.startDay = new Day(Calendar.getInstance());
             YenaDAO.gpsStartUpdate(context,data);
+            timer = new Timer(true);
+            timer.schedule(timerTask,TIMER_PERIOD,TIMER_PERIOD);
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("온스타트커맨드", "들어옴?");
-        ListData data;
         currentLocation = getLocation();
 
-        ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
-        if(haveData(appointmentList)){
-            data = appointmentList.get(0);
-            if(data.isStarted){
-                Log.d("서비스","시작된거 데이터있네");
-                if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
-                    Log.d("서비스","체크인 했대");
-                    data.isComplete = true;
-                    data.isSuccess = true;
-                    data.isStarted = false;
-                    YenaDAO.updateState(context,data);
-                    Log.d("서비스", "디비에 업뎃했어");
-                    onDestroy();
-                }
-                else{
-                    if(timePassed(data)){       /// 도착 못하고 끝난거
-                        // Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG).show();
-                        data.isComplete = true;
-                        data.isSuccess = false;
-                        data.isStarted = false;
-                        YenaDAO.updateState(context,data);
-                        onDestroy();
-                    }
-                }
-        }
-            else{
-
-            }
-        }
         return START_STICKY;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(timer != null){
+            timer.cancel();
+        }
+    }
+
     @TargetApi(23)
     public Location getLocation(){
         if(Build.VERSION.SDK_INT>=23) {
             if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-//                ActivityCompat.requestPMISSION_ACCESS_COARSE_LOCATION);ermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+//                ActivityCompat.requestPMISSION_ACCESS_COARSE_LOCATION);permissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
 //                        LocationService.MY_PER
             }
         }
@@ -121,7 +105,6 @@ public class GpsService extends Service implements LocationListener{
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 Toast.makeText(context,"위치를 가져올 수 없습니다.",Toast.LENGTH_LONG).show();
@@ -163,6 +146,26 @@ public class GpsService extends Service implements LocationListener{
 
         return location;
     }
+
+    TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            ListData data;
+            ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
+            Log.d("타이머","나 일하고있긩~");
+            if(haveData(appointmentList)) {
+                data = appointmentList.get(0);
+                if(timePassed(data)){
+                    Log.d("timePassed","시간 지났지롱");
+                    data.isComplete = true;
+                    data.isSuccess = false;
+                    data.isStarted = false;
+                    YenaDAO.updateState(context,data);
+                    stopSelf();
+                }
+            }
+        }
+    };
 
     public Calendar getTime(){
         Calendar calendar = Calendar.getInstance();
@@ -219,10 +222,38 @@ public class GpsService extends Service implements LocationListener{
 
     @Override
     public void onLocationChanged(Location location) {
+        Toast.makeText(context, "onLocationChanged 중!", Toast.LENGTH_LONG).show();
         currentLocation = location;
+        ListData data;
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("LastLatitude", Double.toString(currentLocation.getLatitude()));
         editor.putString("LastLongitude", Double.toString(currentLocation.getLongitude()));
         editor.commit();
+
+        ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
+        if(haveData(appointmentList)){
+            data = appointmentList.get(0);
+            if(data.isStarted){
+                Log.d("서비스","시작된거 데이터있네");
+                if(checkIn(data,currentLocation)){  ///// 제대로 도착해서 완료된거
+                    Log.d("서비스","체크인 했대");
+                    data.isComplete = true;
+                    data.isSuccess = true;
+                    data.isStarted = false;
+                    YenaDAO.updateState(context,data);
+                    stopSelf();
+                }
+                else{
+                    if(timePassed(data)){       /// 도착 못하고 끝난거
+                        Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG).show();
+                        data.isComplete = true;
+                        data.isSuccess = false;
+                        data.isStarted = false;
+                        YenaDAO.updateState(context,data);
+                        stopSelf();
+                    }
+                }
+            }
+        }
     }
 }

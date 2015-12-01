@@ -28,7 +28,23 @@
         android:layout_marginBottom="70dp"
         android:layout_above="@+id/bt_list_gg"
         android:layout_centerHorizontal="true" />
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/progressBar"
+        android:orientation="horizontal"
+        android:weightSum="100">
+        <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="0"
+            android:id="@+id/weight_frame"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bird_image"
+            />
+    </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,12 +64,6 @@
         android:layout_marginTop="10dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/bird_image"
-        android:layout_alignBottom="@+id/progressBar"/>
 
     <TextView
         android:layout_width="wrap_content"
