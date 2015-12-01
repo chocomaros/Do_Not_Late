@@ -183,9 +183,13 @@ public class GoingGraphicActivity extends AppCompatActivity {
                 tvRemainDistance.setText("남은 거리: " + (int) (currentLocation.distanceTo(destinationLocation)) + "m");
                 Log.d("총 거리"," "+startLocation.distanceTo(destinationLocation));
                 Log.d("남은 거리",""+currentLocation.distanceTo(destinationLocation));
-                percent = (int)((startLocation.distanceTo(destinationLocation)/startLocation.distanceTo(currentLocation))*100);
-                if(percent <= 0){
+                percent = (int)((startLocation.distanceTo(currentLocation)/startLocation.distanceTo(destinationLocation))*100);
+                if((startLocation.distanceTo(destinationLocation)) - (currentLocation.distanceTo(destinationLocation)) <= 0){
                     percent = 0;
+                }
+                else{
+                    percent = (int)(((startLocation.distanceTo(destinationLocation)) - (currentLocation.distanceTo(destinationLocation)))
+                            / (startLocation.distanceTo(destinationLocation)) * 100);
                 }
                 Log.d("percent",""+percent);
                 progressBar.setProgress(percent);

@@ -50,6 +50,7 @@ public class GpsService extends Service implements LocationListener{
 
     protected LocationManager locationManager;
     private Location currentLocation;
+    private NotificationHandling notificationHandling;
 
     Timer timer;
 
@@ -71,7 +72,8 @@ public class GpsService extends Service implements LocationListener{
             data.startDay = new Day(Calendar.getInstance());
             YenaDAO.gpsStartUpdate(context,data);
             timer = new Timer(true);
-            timer.schedule(timerTask,TIMER_PERIOD,TIMER_PERIOD);
+            timer.schedule(timerTask, TIMER_PERIOD, TIMER_PERIOD);
+            notificationHandling = new NotificationHandling(context);
         }
     }
 
@@ -241,6 +243,7 @@ public class GpsService extends Service implements LocationListener{
                     data.isSuccess = true;
                     data.isStarted = false;
                     YenaDAO.updateState(context,data);
+                    notificationHandling.successNotification(data.placeName);
                     stopSelf();
                 }
                 else{
@@ -250,6 +253,7 @@ public class GpsService extends Service implements LocationListener{
                         data.isSuccess = false;
                         data.isStarted = false;
                         YenaDAO.updateState(context,data);
+                        notificationHandling.failNotification(data.placeName);
                         stopSelf();
                     }
                 }
