@@ -76,18 +76,14 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 tempHolder.btStart.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO 시작쨔응 되나?
-                        ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
-                        mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.IS_COMPLETED + " = " + 0 + ", "
-                                + ListData.IS_SUCCESS + " = " + 0 + ", " + ListData.IS_STARTED + " = " + 1 + " where " + ListData.ID + " = " + item.id + ";");
-                        mDBHelper.close();
+                        YenaDAO.startDataUpdate(context,item);
                         context.startService(new Intent(context, GpsService.class));
                         tempHolder.btStart.setText("시작했음!");
                         tempHolder.btStart.setEnabled(false);
                         tempHolder.btStart.setBackgroundResource(R.drawable.bt_enabled);
                         for(int i = 1; i< items.size(); i++){
                             if(items.get(i).isStarted){
-                                YenaDAO.startInformationUpdate(context,items.get(i));
+                                YenaDAO.notStartDataUpdate(context, items.get(i));
                             }
                         }
 

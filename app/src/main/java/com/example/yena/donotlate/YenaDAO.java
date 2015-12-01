@@ -84,7 +84,7 @@ public class YenaDAO {
         mDBHelper.close();
     }
 
-    public static void startInformationUpdate(Context context, ListData listData){
+    public static void notStartDataUpdate(Context context, ListData listData){
         ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
         mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.IS_STARTED+ " = 0, "
                 + ListData.S_DAY + " = 'null', " +ListData.S_LATITUDE+" = 0, "+ListData.S_LONGITUDE+" = 0  where " + ListData.ID + " = " +listData.id+ ";");
@@ -93,9 +93,15 @@ public class YenaDAO {
     }
     public static void gpsStartUpdate(Context context, ListData listData){
         ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
-        mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.S_DAY + " = '"+listData.dDay.toString() + "',"  +ListData.S_LATITUDE+ " = " + listData.startLatitude +
+        mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.S_DAY + " = '"+listData.startDay.toString() + "',"  +ListData.S_LATITUDE+ " = " + listData.startLatitude +
                 ", "+ListData.S_LONGITUDE+" = "+listData.startLongitude+ "  where " + ListData.ID + " = " +listData.id+ ";");
 
+        mDBHelper.close();
+    }
+    public static void startDataUpdate(Context context, ListData listData) {
+        ListDataDBHelper mDBHelper = new ListDataDBHelper(context);
+        mDBHelper.open().mDB.execSQL("update " + ListData.TABLE_NAME + " set " + ListData.IS_COMPLETED + " = " + 0 + ", "
+                + ListData.IS_SUCCESS + " = " + 0 + ", " + ListData.IS_STARTED + " = " + 1 + " where " + ListData.ID + " = " + listData.id + ";");
         mDBHelper.close();
     }
 }

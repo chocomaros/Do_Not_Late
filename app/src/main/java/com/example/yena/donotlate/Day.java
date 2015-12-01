@@ -1,5 +1,7 @@
 package com.example.yena.donotlate;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,6 +47,14 @@ public class Day implements Serializable{
         day = calendar.get(Calendar.DAY_OF_MONTH);
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
+    }
+
+    public Day(Calendar calendar){
+        year = calendar.YEAR;
+        month = calendar.MONTH;
+        day = calendar.DAY_OF_MONTH;
+        hour = calendar.HOUR_OF_DAY;
+        minute = calendar.MINUTE;
     }
 
     public Day currentTime(){
@@ -109,8 +119,10 @@ public class Day implements Serializable{
     }
 
     public Calendar toCalendar(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year,month,day,hour,minute);
-        return calendar;
-    }
-}
+        Calendar returnCalendar = Calendar.getInstance();
+        returnCalendar.set(year, month, day, hour, minute,0);
+       Log.d("toCalendar", returnCalendar.YEAR+"년"+ returnCalendar.MONTH+"월"+ returnCalendar.DAY_OF_MONTH+"일"+ returnCalendar.HOUR_OF_DAY+"시"+ returnCalendar.MINUTE+"분");
+        return returnCalendar;
+        }
+
+        }

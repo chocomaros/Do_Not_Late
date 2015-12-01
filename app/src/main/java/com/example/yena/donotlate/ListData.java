@@ -26,7 +26,6 @@ public class ListData implements Serializable{
     String placeName, placeID;
     Day dDay;
     Day startDay;
-    Day startToDday;
     double dLatitude, dLongitude, startLatitude, startLongitude;
 
     Boolean isComplete = false;

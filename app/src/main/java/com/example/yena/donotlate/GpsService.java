@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Address;
@@ -16,6 +17,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.renderscript.Double2;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ServiceCompat;
@@ -33,8 +35,8 @@ import java.util.List;
 
 public class GpsService extends Service implements LocationListener{
     public static final float DEFAULT_DISTANCE = 50;
-    private static final int REQUEST_CODE_LOCATION = 2;
 
+    private SharedPreferences pref;
     private Context context = this;
 
     boolean isGPSEnabled = false;
@@ -46,6 +48,8 @@ public class GpsService extends Service implements LocationListener{
     protected LocationManager locationManager;
     private Location currentLocation;
 
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,11 +60,12 @@ public class GpsService extends Service implements LocationListener{
             onDestroy();
         }
         else {
+            pref = getSharedPreferences("pref",MODE_PRIVATE);
             Log.d("서비스", "현재 데이터 있대");
             ListData data = appointmentList.get(0);
-            currentLocation = getLocation();
-            data.startLatitude = currentLocation.getLatitude();
-            data.startLongitude = currentLocation.getLongitude();
+            data.startLatitude = Double.parseDouble(pref.getString("LastLatitude","37.5740339"));
+            data.startLongitude = Double.parseDouble(pref.getString("LastLongitude","126.97677499999998"));
+            data.startDay = new Day(Calendar.getInstance());
             YenaDAO.gpsStartUpdate(context,data);
         }
     }
@@ -99,7 +104,6 @@ public class GpsService extends Service implements LocationListener{
             else{
 
             }
-
         }
         return START_STICKY;
     }
@@ -215,6 +219,10 @@ public class GpsService extends Service implements LocationListener{
 
     @Override
     public void onLocationChanged(Location location) {
-
+        currentLocation = location;
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("LastLatitude", Double.toString(currentLocation.getLatitude()));
+        editor.putString("LastLongitude", Double.toString(currentLocation.getLongitude()));
+        editor.commit();
     }
 }

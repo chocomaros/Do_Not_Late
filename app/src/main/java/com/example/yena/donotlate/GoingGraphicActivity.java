@@ -1,9 +1,11 @@
 package com.example.yena.donotlate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
+import android.location.Location;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class GoingGraphicActivity extends AppCompatActivity {
@@ -39,22 +42,22 @@ public class GoingGraphicActivity extends AppCompatActivity {
     float displayWidth, density;
     ListData data;
     Timer countDownTimer;
-    Calendar remainTime;
-    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    SharedPreferences  pref;
+    Location currentLocation, destinationLocation, startLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("고잉","온크리에이트");
+        Log.d("고잉", "온크리에이트");
         setContentView(R.layout.activity_going_graphic);
         ivBird = (ImageView) findViewById(R.id.bird_image);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
-        progressBar.setProgress(percent);
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
         density  = getResources().getDisplayMetrics().density;
         displayWidth = outMetrics.widthPixels / density;
+        pref = getSharedPreferences("pref",MODE_PRIVATE);
 
         if(!isStarted()){
             Log.d("고잉","스타트로 보내기");
@@ -70,14 +73,18 @@ public class GoingGraphicActivity extends AppCompatActivity {
             tvRemainTime = (TextView)findViewById(R.id.tv_remain_time);
             tvRemainDistance = (TextView)findViewById(R.id.tv_remain_distance);
 
-            countDownTimer = new Timer(data.startDay.toCalendar().getTimeInMillis(),INTERVAL);
-            countDownTimer.onTick(data.startDay.toCalendar().getTimeInMillis() - Calendar.getInstance().getTimeInMillis());
-
             tvName.setText(data.title);
             tvRemainTime.setText("시간 얼마나 남았지");
             tvRemainDistance.setText("거리 얼마나 남았지");
             btList = (Button)findViewById(R.id.bt_list_gg);
 
+            currentLocation = new Location("");
+            destinationLocation = new Location("");
+            startLocation = new Location("");
+            destinationLocation.setLatitude(data.dLatitude);
+            destinationLocation.setLongitude(data.dLongitude);
+            startLocation.setLatitude(data.startLatitude);
+            startLocation.setLongitude(data.startLongitude);
 
             btList.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -93,7 +100,6 @@ public class GoingGraphicActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("고잉 온리줌", "서비스 시작 전");
-        startService(new Intent(this, GpsService.class));
         Log.d("고잉 온리쥼", "여긴 왔니?");
         if(!isStarted()){
             Intent intent = new Intent(GoingGraphicActivity.this, StartActivity.class);
@@ -101,8 +107,18 @@ public class GoingGraphicActivity extends AppCompatActivity {
             Log.d("고잉", "여긴 들어오니?");
             finish();
         }else{
-            setImagePosition();
+            Log.d("destinationLocation", "La  "+destinationLocation.getLatitude()+" Long  " + destinationLocation.getLongitude());
+            Log.d("startLocation", "La  "+startLocation.getLatitude()+" Long  " + startLocation.getLongitude());
+            countDownTimer = new Timer( data.dDay.toCalendar().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), INTERVAL);
+            Log.d("타임인 밀리스 차이", "" + (-Calendar.getInstance().getTimeInMillis())+"    "+ data.dDay.toCalendar().getTimeInMillis()+"   "+Calendar.getInstance().getTimeInMillis());
+            countDownTimer.start();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        countDownTimer.cancel();
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -159,6 +175,7 @@ public class GoingGraphicActivity extends AppCompatActivity {
         public Timer(long startTime, long interval)
         {
             super(startTime, interval);
+            Log.d("Timer",""+startTime);
         }
 
         @Override
@@ -169,8 +186,19 @@ public class GoingGraphicActivity extends AppCompatActivity {
 
         @Override
         public void onTick(long millisUntilFinished) {
-            remainTime.setTimeInMillis(millisUntilFinished);
-            tvRemainTime.setText("남은 시간:" + formatter.format(remainTime));
+            currentLocation.setLatitude(Double.parseDouble(pref.getString("LastLatitude", "37.5740339")));
+            currentLocation.setLongitude(Double.parseDouble(pref.getString("LastLongitude","126.97677499999998")));
+            Log.d("currentLocation", "La  "+currentLocation.getLatitude()+" Long  " + currentLocation.getLongitude());
+            try {
+                tvRemainTime.setText("완료되기 까지 " + String.format("%02d:%02d:%02d", millisUntilFinished / 3600000, (millisUntilFinished % 3600000) / 60000, (millisUntilFinished % 60000) / 1000));
+                tvRemainDistance.setText("남은 거리: " + (int)(currentLocation.distanceTo(destinationLocation))+"m");
+                percent = (int)(startLocation.distanceTo(startLocation)/currentLocation.distanceTo(destinationLocation));
+                progressBar.setProgress(percent);
+                setImagePosition();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

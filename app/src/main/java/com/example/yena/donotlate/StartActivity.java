@@ -23,8 +23,6 @@ public class StartActivity extends Activity {
         super.onCreate(savedInstanceState);
         Log.d("스타트 액티비티", "온크리에이트");
 //        gpsService = new GpsService(getApplicationContext());
-        Intent gpsIntent = new Intent(this,GpsService.class);
-        startService(gpsIntent);
         if (!isStarted()) {
             setContentView(R.layout.activity_start);
 
@@ -47,8 +45,6 @@ public class StartActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Log.d("스타트 액티비티", "온리줌");
-        Intent gpsIntent = new Intent(this,GpsService.class);
-        startService(gpsIntent);
   ;
 
 //        Log.d("StartActivity", "위도 : " + gpsService.latitude + "경도 : " + gpsService.longitude);
