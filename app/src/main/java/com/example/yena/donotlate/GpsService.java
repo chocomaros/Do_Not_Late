@@ -67,8 +67,14 @@ public class GpsService extends Service implements LocationListener{
             pref = getSharedPreferences("pref",MODE_PRIVATE);
             Log.d("서비스", "현재 데이터 있대");
             ListData data = appointmentList.get(0);
-            data.startLatitude = Double.parseDouble(pref.getString("LastLatitude","37.5740339"));
-            data.startLongitude = Double.parseDouble(pref.getString("LastLongitude","126.97677499999998"));
+            currentLocation = getLocation();
+            if(currentLocation == null) {
+                data.startLatitude = Double.parseDouble(pref.getString("LastLatitude", "37.5740339"));
+                data.startLongitude = Double.parseDouble(pref.getString("LastLongitude", "126.97677499999998"));
+            }else{
+                data.startLatitude = getLocation().getLatitude();
+                data.startLongitude = getLocation().getLongitude();
+            }
             data.startDay = new Day(Calendar.getInstance());
             YenaDAO.gpsStartUpdate(context,data);
             timer = new Timer(true);
@@ -249,11 +255,11 @@ public class GpsService extends Service implements LocationListener{
                 else{
                     if(timePassed(data)){       /// 도착 못하고 끝난거
                         Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG).show();
+                        notificationHandling.failNotification(data.placeName);
                         data.isComplete = true;
                         data.isSuccess = false;
                         data.isStarted = false;
                         YenaDAO.updateState(context,data);
-                        notificationHandling.failNotification(data.placeName);
                         stopSelf();
                     }
                 }

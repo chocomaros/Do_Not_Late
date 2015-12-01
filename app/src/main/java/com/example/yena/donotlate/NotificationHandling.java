@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 
 /**
@@ -27,6 +28,7 @@ public class NotificationHandling {
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.late1))
                 .setSmallIcon(R.drawable.ic_check)
                 .setTicker(title + "에 도착을 완료하였습니다.")
                 .setWhen(System.currentTimeMillis())
@@ -43,6 +45,7 @@ public class NotificationHandling {
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.late1))
                 .setSmallIcon(R.drawable.ic_x)
                 .setTicker(title + "에 도착을 하지 못했습니다.")
                 .setWhen(System.currentTimeMillis())
