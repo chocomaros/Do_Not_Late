@@ -32,7 +32,7 @@ public class NotificationHandling {
                 .setSmallIcon(R.drawable.ic_check)
                 .setTicker(title + "에 도착을 완료하였습니다.")
                 .setWhen(System.currentTimeMillis())
-                .setContentTitle("성공하였습니다.")
+                .setContentTitle("성공하였습니다! ㅊㅋㅊㅋ")
                 .setContentInfo(title + "에 도착을 완료하였습니다.")
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
@@ -50,7 +50,7 @@ public class NotificationHandling {
                 .setTicker(title + "에 도착을 하지 못했습니다.")
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingIntent)
-                .setContentTitle("실패하였습니다. 인터넷을 차단합니다.")
+                .setContentTitle("실패!! 인터넷을 차단합니다.")
                 .setContentInfo(title + "에 도착을 하지 못했습니다.")
                 .setAutoCancel(true);
         notificationManager.notify(2,builder.build());

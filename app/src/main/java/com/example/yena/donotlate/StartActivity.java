@@ -31,6 +31,8 @@ public class StartActivity extends Activity {
 //
 
 
+
+            stopService(new Intent(this, InternetService.class));
             showList.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

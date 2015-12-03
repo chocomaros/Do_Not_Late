@@ -4,6 +4,7 @@ import android.*;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +38,7 @@ import java.util.TimerTask;
 
 public class GpsService extends Service implements LocationListener{
     public static final float DEFAULT_DISTANCE = 50;
-    public static final int TIMER_PERIOD = 60*1000;
+    public static final int GPS_TIMER_PERIOD = 60*1000;
 
     private SharedPreferences pref;
     private Context context = this;
@@ -46,7 +47,7 @@ public class GpsService extends Service implements LocationListener{
     boolean isNetworkEnabled = false;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60;
 
     protected LocationManager locationManager;
     private Location currentLocation;
@@ -68,17 +69,23 @@ public class GpsService extends Service implements LocationListener{
             Log.d("서비스", "현재 데이터 있대");
             ListData data = appointmentList.get(0);
             currentLocation = getLocation();
-            if(currentLocation == null) {
-                data.startLatitude = Double.parseDouble(pref.getString("LastLatitude", "37.5740339"));
-                data.startLongitude = Double.parseDouble(pref.getString("LastLongitude", "126.97677499999998"));
-            }else{
-                data.startLatitude = getLocation().getLatitude();
-                data.startLongitude = getLocation().getLongitude();
+            if(data.startLatitude == 0 && data.startLongitude == 0){
+                Toast.makeText(context,"시작한거 없는 곳!",Toast.LENGTH_LONG).show();
+                if (currentLocation == null) {
+                    data.startLatitude = Double.parseDouble(pref.getString("LastLatitude", "37.5740339"));
+                    data.startLongitude = Double.parseDouble(pref.getString("LastLongitude", "126.97677499999998"));
+                } else {
+                    data.startLatitude = getLocation().getLatitude();
+                    data.startLongitude = getLocation().getLongitude();
+                }
+                data.startDay = new Day(Calendar.getInstance());
+                YenaDAO.gpsStartUpdate(context, data);
             }
-            data.startDay = new Day(Calendar.getInstance());
-            YenaDAO.gpsStartUpdate(context,data);
+            else {
+                Toast.makeText(context,"다시 onCreate 불린겅",Toast.LENGTH_LONG).show();
+            }
             timer = new Timer(true);
-            timer.schedule(timerTask, TIMER_PERIOD, TIMER_PERIOD);
+            timer.schedule(timerTask, GPS_TIMER_PERIOD, GPS_TIMER_PERIOD);
             notificationHandling = new NotificationHandling(context);
         }
     }
@@ -169,6 +176,8 @@ public class GpsService extends Service implements LocationListener{
                     data.isSuccess = false;
                     data.isStarted = false;
                     YenaDAO.updateState(context,data);
+                    notificationHandling.failNotification(data.placeName);
+                    startService(new Intent(GpsService.this, InternetService.class));
                     stopSelf();
                 }
             }
@@ -255,11 +264,11 @@ public class GpsService extends Service implements LocationListener{
                 else{
                     if(timePassed(data)){       /// 도착 못하고 끝난거
                         Toast.makeText(context,"시간지났지롱",Toast.LENGTH_LONG).show();
-                        notificationHandling.failNotification(data.placeName);
                         data.isComplete = true;
                         data.isSuccess = false;
                         data.isStarted = false;
                         YenaDAO.updateState(context,data);
+                        notificationHandling.failNotification(data.placeName);
                         stopSelf();
                     }
                 }

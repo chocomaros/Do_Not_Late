@@ -113,7 +113,11 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         else if(holder instanceof CompleteViewHolder){
             CompleteViewHolder tempHolder = (CompleteViewHolder) holder;
             tempHolder.title.setText(item.title);
-            if(!item.isSuccess) tempHolder.successImage.setImageDrawable(context.getDrawable(R.drawable.ic_x));
+            if(!item.isSuccess){
+                tempHolder.successImage.setImageDrawable(context.getDrawable(R.drawable.ic_x));
+            } else{
+                tempHolder.successImage.setImageDrawable(context.getDrawable(R.drawable.ic_check));
+            }
 
             tempHolder.btMore.setOnClickListener(new View.OnClickListener() {
                 @Override
