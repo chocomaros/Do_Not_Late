@@ -52,6 +52,7 @@ public class GpsService extends Service implements LocationListener{
     protected LocationManager locationManager;
     private Location currentLocation;
     private NotificationHandling notificationHandling;
+    private StartAlarm startAlarm;
 
     Timer timer;
 
@@ -61,6 +62,7 @@ public class GpsService extends Service implements LocationListener{
         Log.d("서비스 온크리에이트", "들어옴?");
         Toast.makeText(context, "서비스 시작", Toast.LENGTH_LONG).show();
         ArrayList<ListData> appointmentList = YenaDAO.getCurrentList(getApplicationContext());
+        startAlarm = new StartAlarm();
         if(!haveData(appointmentList)) {
             stopSelf();
         }
@@ -177,6 +179,9 @@ public class GpsService extends Service implements LocationListener{
                     data.isStarted = false;
                     YenaDAO.updateState(context,data);
                     notificationHandling.failNotification(data.placeName);
+                    if(appointmentList.get(1) != null){
+                        startAlarm.setAlarm(context,appointmentList.get(1));
+                    }
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putLong("InternetServiceEnd", data.dDay.toCalendar().getTimeInMillis() + InternetService.INTERNET_TIMER_END); /// 한시간뒤
                     editor.commit();
@@ -262,6 +267,10 @@ public class GpsService extends Service implements LocationListener{
                     data.isStarted = false;
                     YenaDAO.updateState(context,data);
                     notificationHandling.successNotification(data.placeName);
+                    appointmentList = YenaDAO.getCurrentList(context);
+                    if(appointmentList.size() != 0){
+                        startAlarm.setAlarm(context,appointmentList.get(0));
+                    }
                     stopSelf();
                 }
                 else{
@@ -272,6 +281,9 @@ public class GpsService extends Service implements LocationListener{
                         data.isStarted = false;
                         YenaDAO.updateState(context,data);
                         notificationHandling.failNotification(data.placeName);
+                        if(appointmentList.get(1) != null){
+                            startAlarm.setAlarm(context,appointmentList.get(1));
+                        }
                         editor.putLong("InternetServiceEnd", data.dDay.toCalendar().getTimeInMillis() + InternetService.INTERNET_TIMER_END); // 한시간뒤
                         editor.commit();
                         startService(new Intent(GpsService.this, InternetService.class));

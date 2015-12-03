@@ -42,6 +42,7 @@ public class AddDataActivity extends AppCompatActivity {
     Boolean checkTime = false;
     Boolean checkPlace = false;
     GoogleMap googleMap;
+    StartAlarm startAlarm;
     final int REQUEST_PLACE_PICKER = 1;
 
     @Override
@@ -53,7 +54,7 @@ public class AddDataActivity extends AppCompatActivity {
         tvDate = (TextView) findViewById(R.id.tv_insert_date);
         tvPlace = (TextView) findViewById(R.id.tv_insert_place);
         mapView = (MapView) findViewById(R.id.map);
-
+        startAlarm = new StartAlarm();
 
         mapView.onCreate(new Bundle());
         mapView.onResume();
@@ -197,6 +198,7 @@ public class AddDataActivity extends AppCompatActivity {
             if(checkTitle && checkDate && checkTime && checkPlace){
                 if(!isTimePassed()){
                    YenaDAO.insertData(getApplicationContext(),listData);
+                    startAlarm.setAlarm(getApplicationContext(), YenaDAO.getCurrentList(getApplicationContext()).get(0));
                     finish();
                 }
                 else{
