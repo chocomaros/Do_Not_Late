@@ -28,11 +28,7 @@ public class StartActivity extends Activity {
 
             ivLate = (ImageView)findViewById(R.id.late_image);
              Button showList = (Button) findViewById(R.id.bt_list);
-//
 
-
-
-            stopService(new Intent(this, InternetService.class));
             showList.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

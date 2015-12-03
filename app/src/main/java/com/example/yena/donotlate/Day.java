@@ -14,8 +14,6 @@ import java.util.Locale;
  */
 public class Day implements Serializable{
 
-    public static int KOREA_TIME_DIFFERENCE = 9;
-
     int year;
     int month; ///// 1월은 0
     int day;
@@ -57,59 +55,6 @@ public class Day implements Serializable{
         minute = calendar.MINUTE;
     }
 
-    public Day currentTime(){
-        Calendar calendar = Calendar.getInstance();
-        Day currentDay = new Day(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-        return currentDay;
-    }
-
-    Day timeDifference(Day day){
-
-        int resultDay;
-        int resultHour;
-        int resultMinute;
-
-        Calendar thisCalendar = Calendar.getInstance();
-        thisCalendar.set(this.year, this.month, this.day, this.hour, this.minute);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(day.year, day.month, day.day, day.hour, day.minute);
-
-        long thisTime = thisCalendar.getTimeInMillis();
-        long time =  calendar.getTimeInMillis();
-
-        long result = ((thisTime - time) > 0) ? (thisTime - time) : (time - thisTime);
-        result = result / (1000 * 60); //// 분 단위
-
-        if((result / (60 * 24)) > 0) {
-            resultDay = (int) (result / (60 * 24));
-            result -= resultDay * 60 * 24; /// 몇일인지
-        }
-        else
-            resultDay = 0;
-
-        if(((result / 60) > 0) && ((result / 60) < 24)){
-            resultHour = (int)(result / 60);
-            result -= resultHour * 60;
-        }
-        else
-            resultHour = 0;
-
-        resultMinute = (int)result;
-
-        Day difference = new Day(); ///// 시간 차이 표현해줄땐, 일 / 시간 / 분 만
-        difference.year = 0;
-        difference.month = 0;
-        difference.day = resultDay;
-        difference.hour = resultHour;
-        difference.minute = resultMinute;
-        return difference;
-    }
-
-    void printTimeDifference(){
-       // Day difference = timeDifference();
-        //TODO 디데이와 현재 시간 출력 어떻게 해줄지?
-    }
-
     public String toString(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
         Calendar calendar = Calendar.getInstance();
@@ -121,7 +66,6 @@ public class Day implements Serializable{
     public Calendar toCalendar(){
         Calendar returnCalendar = Calendar.getInstance();
         returnCalendar.set(year, month, day, hour, minute,0);
-       Log.d("toCalendar", returnCalendar.YEAR+"년"+ returnCalendar.MONTH+"월"+ returnCalendar.DAY_OF_MONTH+"일"+ returnCalendar.HOUR_OF_DAY+"시"+ returnCalendar.MINUTE+"분");
         return returnCalendar;
         }
 
