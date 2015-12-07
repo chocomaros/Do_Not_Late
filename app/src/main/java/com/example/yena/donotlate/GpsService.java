@@ -179,7 +179,7 @@ public class GpsService extends Service implements LocationListener{
                     data.isStarted = false;
                     YenaDAO.updateState(context,data);
                     notificationHandling.failNotification(data.placeName);
-                    if(appointmentList.get(1) != null){
+                    if(appointmentList.size()!=1){
                         startAlarm.setAlarm(context,appointmentList.get(1));
                     }
                     SharedPreferences.Editor editor = pref.edit();
@@ -284,7 +284,8 @@ public class GpsService extends Service implements LocationListener{
                         if(appointmentList.get(1) != null){
                             startAlarm.setAlarm(context,appointmentList.get(1));
                         }
-                        editor.putLong("InternetServiceEnd", data.dDay.toCalendar().getTimeInMillis() + InternetService.INTERNET_TIMER_END); // 한시간뒤
+                        editor.putLong("InternetServiceEnd", data.dDay.toCalendar().getTimeInMillis()
+                                + InternetService.INTERNET_TIMER_END); // 한시간뒤
                         editor.commit();
                         startService(new Intent(GpsService.this, InternetService.class));
                         stopSelf();
