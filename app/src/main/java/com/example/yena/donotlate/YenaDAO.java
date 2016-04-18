@@ -21,7 +21,6 @@ public class YenaDAO {
         appointmentList.clear();
         Cursor cursor = mDBHelper.open().mDB.rawQuery("select * from " + ListData.TABLE_NAME + " order by " + ListData.D_DAY + ";", null);
         while (cursor.moveToNext())
-
         {
             ListData temp = new ListData(cursor);
 //                Log.d("메인액티비티",temp.dDay+"");
